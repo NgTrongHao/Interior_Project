@@ -1,0 +1,442 @@
+@charset "UTF-8";
+@import url("../../../BaseCss/base.css");
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.05); /* Màu sắc và độ đậm của lớp phủ */
+  pointer-events: none; /* Cho phép sự kiện đi qua lớp phủ */
+  transition: background-color 0.5s ease; /* Hiệu ứng chuyển đổi màu sắc */
+}
+
+.main {
+  display: flex;
+  justify-content: center;
+}
+
+.grid {
+  max-width: 1200px;
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  /* Trong CSS của bạn */
+}
+.grid .row {
+  width: 100% !important;
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(223, 233, 244, 0.4);
+  padding: 0 3%;
+  height: 50vh;
+  flex-wrap: nowrap;
+}
+.grid .row .newProject-box {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.grid .row .newProject-box .project-title {
+  margin: 0;
+  font-size: 2.6rem;
+  font-weight: 800;
+  padding: 20px;
+  left: 0;
+}
+.grid .row .newProject-box .project-description {
+  padding: 0 20px;
+  font-size: 1.4rem;
+  justify-content: flex-start;
+}
+.grid .row .newProject-box .See-more-details {
+  font-size: 1.6rem;
+  font-weight: 500;
+  text-decoration: none;
+  margin: 0 20px;
+  padding: 0;
+}
+.grid .row .pro-img {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  justify-content: center;
+  align-items: center;
+}
+.grid .row .img-tag {
+  display: block;
+  width: 100%;
+  border-radius: 5px;
+}
+.grid .row-2 {
+  width: 100% !important;
+  margin: 20px 0;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 3%;
+  height: 100%;
+}
+.grid .hero-carousel .single-carousel img {
+  width: 100%;
+  height: 80vh;
+  -o-object-fit: cover;
+  object-fit: cover;
+  -o-object-position: 50% 50%;
+  object-position: 50% 50%;
+  transition: opacity 0.5s ease;
+  z-index: 1;
+}
+.grid .slick-prev {
+  position: absolute;
+  z-index: 1;
+  left: -3%;
+  top: 50%;
+}
+.grid .slick-next {
+  z-index: 1;
+  top: 50%;
+  right: 10px;
+  position: absolute;
+  right: -3%;
+}
+.grid .slick-prev,
+.grid .slick-next {
+  font-size: 2rem;
+  padding: 6px 12px;
+  background-color: transparent;
+  color: var(--main-color);
+  font-weight: 500;
+  outline: none;
+  text-decoration: none;
+  border-radius: 50%;
+}
+.grid .slick-prev:hover,
+.grid .slick-next:hover {
+  background-color: var(--primary-color);
+  opacity: 0.5;
+}
+.grid .fa-angle-left,
+.grid .fa-angle-right {
+  background-color: transparent;
+  text-decoration: none;
+  color: var(--main-color);
+}
+.grid .newProject-box {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+.grid .pro-img {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  /* Ẩn phần vượt quá max-height */
+}
+.grid .pro-img .img-tag {
+  display: block;
+  width: 100%;
+  max-height: 100%;
+  /* Đảm bảo chiều cao không vượt quá 100% */
+}
+.grid .hero-carousel {
+  width: 100%;
+  height: 100%;
+}
+.grid .body-carousel-box {
+  height: 100%;
+  width: 100%;
+}
+.grid .body-carousel-box .item {
+  position: relative;
+  display: inline-block;
+  -o-object-fit: cover;
+  object-fit: cover;
+  margin: 5px;
+}
+.grid .body-carousel-box .description {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  color: var(--white-color);
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+.grid .body-carousel-box .description .description-title {
+  color: var(--white-color);
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 3px;
+  text-decoration: none;
+}
+.grid .body-carousel-box .description .description-details {
+  font-size: 1rem;
+}
+.grid .body-carousel-box .description .description-detail-more {
+  color: var(--white-color);
+}
+.grid .body-carousel-box .description .description-detail-more:hover {
+  color: var(--highlight-color);
+}
+.grid .body-carousel-box .item:hover .description {
+  height: 50%;
+  transform: translateX(-50%) translateY(0%);
+  opacity: 1;
+}
+.grid .body-picture {
+  width: 100%;
+  height: auto;
+}
+.grid .hero-carousel .single-carousel img {
+  width: 100%;
+  height: 30vh;
+  -o-object-fit: cover;
+  object-fit: cover;
+  -o-object-position: 50% 50%;
+  object-position: 50% 50%;
+  transition: opacity 0.5s ease;
+  z-index: 1;
+}
+.grid .create-project {
+  font-size: 1.8rem !important;
+  font-weight: 800;
+  border-radius: 50px;
+  padding: 20px 30px;
+  border: none;
+  background-color: var(--main-color);
+  color: var(--white-color);
+  font-size: 1.4rem;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+  outline: none !important;
+  margin: 20px;
+}
+.grid .create-project:hover {
+  background-color: var(--border-color);
+  opacity: 0.99;
+  cursor: pointer;
+  outline: none !important;
+}
+.grid .container {
+  background: linear-gradient(to bottom, #ebf3fa, var(--white-color));
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 20px;
+}
+.grid .container .title {
+  font-size: 4rem;
+  color: var(--black-color);
+  font-weight: 500;
+  width: 100%;
+  text-align: center;
+}
+.grid .container .content {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.grid .container .content .box {
+  background: var(--primary-color);
+  display: flex;
+  flex-direction: column;
+  margin: 20px 10px;
+  align-items: center;
+  width: 30%;
+}
+.grid .container .content .box .project-img {
+  width: 100%;
+  height: 30vh;
+  margin-bottom: 10px;
+  -o-object-fit: cover;
+  object-fit: cover;
+  -o-object-position: 50% 50%;
+  object-position: 50% 50%;
+}
+.grid .container .content .box .project-title {
+  color: #b00000;
+  font-size: 2rem;
+  font-weight: 500;
+  margin-bottom: 10px;
+  padding: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.grid .container .content .box .project-info p {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  text-align: center;
+  padding: 0 20px;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.grid .container .content .box .project-price {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  font-size: 1.6rem;
+  color: var(--text-color);
+  margin-bottom: 10px;
+}
+.grid .container .content .box .project-price p {
+  font-size: 1.6rem;
+  font-weight: 400;
+}
+.grid .container .content .box .project-price p:last-child {
+  padding-left: 10px;
+  font-weight: 600;
+}
+.grid .container .content .box a {
+  color: #000c2c;
+  font-weight: 500;
+  margin-bottom: 10px;
+  font-size: 1.6rem;
+}
+.grid .container .content .box a:hover {
+  color: var(--highlight-color);
+  cursor: pointer;
+}
+.grid .container .pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.grid .container .pagination span {
+  font-size: 1.4rem;
+  font-weight: 400;
+}
+.grid .container .pagination button {
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100px;
+  margin: 10px 20px;
+  border-radius: 5%;
+  padding: 10px 25px;
+  background-color: var(--border-color);
+}
+.grid .container .pagination button:hover {
+  background-color: var(--highlight-color);
+}
+.grid .container .pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.grid .quote-form {
+  border-radius: 10px;
+  background: var(--primary-color);
+  width: 100%;
+  display: flex;
+  padding: 40px 60px;
+}
+.grid .quote-form .quote-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  padding-right: 50px;
+}
+.grid .quote-form .quote-content h1 {
+  font-size: 2.5rem;
+  color: var(--text-color);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.grid .quote-form .quote-content p {
+  font-size: 1.6rem;
+  line-height: 1.6;
+  color: var(--text-color);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 8;
+}
+.grid .quote-form .form-regis {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.grid .quote-form .form-regis .input-group {
+  margin-bottom: 20px;
+}
+.grid .quote-form .form-regis .input-group label {
+  display: block;
+  font-weight: 500;
+  font-size: 1.8rem;
+  margin-bottom: 5px;
+}
+.grid .quote-form .form-regis .input-group input[type="text"],
+.grid .quote-form .form-regis .input-group input[type="email"],
+.grid .quote-form .form-regis .input-group input[type="tel"],
+.grid .quote-form .form-regis .input-group textarea,
+.grid .quote-form .form-regis .input-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-size: 1.6rem;
+  line-height: 1.4;
+  margin: 0;
+}
+.grid .quote-form .form-regis .input-group input[type="text"]:not(select),
+.grid .quote-form .form-regis .input-group input[type="email"]:not(select),
+.grid .quote-form .form-regis .input-group input[type="tel"]:not(select),
+.grid .quote-form .form-regis .input-group textarea:not(select),
+.grid .quote-form .form-regis .input-group select:not(select) {
+  padding-right: 40px;
+}
+.grid .quote-form .form-regis .input-group input[type="text"].workspace,
+.grid .quote-form .form-regis .input-group input[type="email"].workspace,
+.grid .quote-form .form-regis .input-group input[type="tel"].workspace,
+.grid .quote-form .form-regis .input-group textarea.workspace,
+.grid .quote-form .form-regis .input-group select.workspace {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6" /></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+}
+.grid .quote-form .form-regis .input-group textarea {
+  height: 120px;
+}
+.grid .quote-form .form-regis .regis-button {
+  padding: 10px 20px;
+  background-color: var(--main-color);
+  color: var(--white-color);
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.grid .quote-form .form-regis .regis-button:hover {
+  background-color: var(--highlight-color);
+} /*# sourceMappingURL=Blog.css.map */
+.css-uym98a-MuiImageList-root {
+  margin: 10px;
+  width: 100% !important;
+}
+.new-part{
+  display: flex;
+  flex-direction: column;
+  
+}

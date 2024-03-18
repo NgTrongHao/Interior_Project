@@ -1,0 +1,62 @@
+@import url('../../BaseCss/base.css');
+.proposalBox{
+    width: 100%;
+    display: flex;
+    flex-direction: column;    
+}
+.proposalBox input{
+    height: 100%;
+}
+.fileUploadBox{
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    height: auto;
+    
+}
+.buttonUpload{
+    padding: 10px 15px;
+    margin: 20px;
+    width: 150px;
+    background-color: var(--main-color);
+    font-size: 2rem;
+    font-weight: 500;
+    color: var(--white-color);
+    border-radius: 5px;
+    cursor: pointer;
+}
+.buttonUpload:hover{
+    background-color: var(--primary-color);
+    color: var(--highlight-color);
+}
+
+.buttonAdjust{
+    width: 300px;
+    padding: 10px 20px;
+    margin: 20px;
+    background-color: var(--main-color);
+    font-size: 2rem;
+    font-weight: 500;
+    color: var(--white-color);
+    border-radius: 5px;
+    cursor: pointer;
+}
+.buttonAdjust:hover{
+    background-color: var(--primary-color);
+    color: var(--highlight-color);
+}
+.fileInput{
+    height: 100%;
+}
+.mainConttentBox{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+.mainConttentBox label{
+    margin: 20px;
+}
+
+.pdfBox{
+    margin: 0 auto;
+}
