@@ -1,0 +1,25 @@
+@import url('../../BaseCss/base.css');
+th{
+    font-size: 1.2rem !important;
+}
+td{
+    font-size: 1.2rem !important;
+}
+thead th{
+    font-weight: bold !important;
+    font-size: 1.6rem !important;
+
+}
+.css-177gid-MuiTableCell-root:nth-child(4){
+    color: #00810f;
+    font-weight: bold;
+}
+.css-1e6y48t-MuiButtonBase-root-MuiButton-root{
+    background-color: var(--highlight-color) !important;
+    margin: 10px !important;
+    padding: 10px 20px !important;
+    border-radius: 5px !important;
+    font-size: 1.2rem !important;
+    font-weight: 500 !important;
+
+}

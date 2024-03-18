@@ -1,0 +1,393 @@
+@charset "UTF-8";
+@import url("../../../BaseCss/base.css");
+@media only screen and (max-width: 768px) {
+  .about-title {
+    font-size: 3rem;
+    padding: 20px auto;
+  }
+  .grid__row .about-title {
+    padding: 20px; /* Giảm padding cho phần tiêu đề */
+    text-align: center; /* Căn giữa nội dung của phần tiêu đề */
+  }
+  .grid__row .about-title h1 {
+    font-size: 3.5rem; /* Giảm kích thước font cho tiêu đề h1 */
+  }
+  .grid__row .about-us {
+    flex-direction: column; /* Chuyển layout thành dạng dọc */
+    height: auto; /* Thay đổi chiều cao thành tự động */
+    padding: 20px; /* Giảm padding cho phần nội dung */
+  }
+  .grid__row .about-us .about-us-img {
+    width: 100%; /* Đảm bảo ảnh chiếm toàn bộ chiều rộng */
+    height: auto; /* Chiều cao tự động theo tỉ lệ */
+    margin-bottom: 20px; /* Thêm khoảng cách dưới cho hình ảnh */
+  }
+  .grid__row .about-us .about-us-content {
+    text-align: center; /* Căn giữa nội dung */
+  }
+  .grid__row .about-us .about-us-content p {
+    font-size: 1.6rem; /* Giảm kích thước font cho các đoạn văn */
+    margin-bottom: 10px; /* Giảm khoảng cách dưới cho các đoạn văn */
+  }
+  .hero-carousel .body-title h1 {
+    font-size: 2rem; /* Giảm kích thước font cho tiêu đề trong carousel */
+    padding: 10px; /* Giảm padding cho phần tiêu đề */
+  }
+  .body-carousel-box .description {
+    padding: 10px; /* Giảm padding cho phần mô tả */
+  }
+  .body-carousel-box .description .description-title {
+    font-size: 1.8rem; /* Giảm kích thước font cho tiêu đề mô tả */
+  }
+  .body-carousel-box .description .description-details {
+    font-size: 1.4rem; /* Giảm kích thước font cho mô tả chi tiết */
+  }
+  .body-carousel-box .description .description-detail-more {
+    font-size: 1rem; /* Giảm kích thước font cho phần xem thêm */
+  }
+  .hero-carousel .single-carousel img {
+    height: 40vh; /* Giảm chiều cao cho hình ảnh trong carousel */
+  }
+}
+.main .grid {
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  /* Trong CSS của bạn */
+}
+.main .grid .fullscreen-background {
+  /* Căn chỉnh cho phần tử chứa hình ảnh */
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+.main .grid .fullscreen-background .body-img {
+  width: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  -o-object-fit: contain;
+  object-fit: contain;
+  -o-object-position: 50% 50%;
+  object-position: 50% 50%;
+  transition: opacity 0.5s ease;
+  z-index: 1;
+}
+.main .grid .fullscreen-background h1 {
+  /* Căn giữa văn bản trên hình ảnh */
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  padding: 40px 60px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgb(232, 231, 231); /* Màu chữ */
+  font-size: 4rem; /* Kích thước chữ */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+}
+.main .grid .grid__row .about-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  width: 100%;
+  border-radius: 10px; /* Cong các góc */
+}
+.main .grid .grid__row .about-title h1 {
+  font-size: 3.5rem;
+  font-weight: 400;
+  color: var(--main-color);
+}
+.main .grid .grid__row .about-us {
+  width: 100% !important;
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(
+    to bottom,
+    var(--primary-color),
+    var(--white-color)
+  );
+  padding: 0 3%;
+  height: 50vh;
+  flex-wrap: nowrap;
+}
+.main .grid .grid__row .about-us .about-us-img {
+  flex: 2;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  -o-object-fit: cover;
+  object-fit: cover;
+  -o-object-position: 50% 50%;
+  object-position: 50% 50%;
+  transition: opacity 0.5s ease;
+  z-index: 1;
+  border-radius: 5px;
+}
+.main .grid .grid__row .about-us .about-us-content {
+  color: var(--black-color);
+  flex: 3;
+  text-align: center; /* Căn giữa nội dung */
+  max-height: 100%;
+}
+.main .grid .grid__row .about-us .about-us-content p {
+  font-family: Arial, sans-serif; /* Font chữ */
+  line-height: 1.5;
+  font-size: 2.2rem; /* Kích thước font */
+  font-weight: normal; /* Trọng lượng font */
+  line-height: 1.5; /* Khoảng cách giữa các dòng */
+  margin-bottom: 20px; /* Khoảng cách giữa các đoạn văn */
+  max-height: 100%;
+}
+.main .grid .grid__row .about-us .about-us-content p:first-child {
+  margin-top: 0; /* Loại bỏ khoảng trống trên cùng cho đoạn văn đầu tiên */
+  font-size: 3.5rem;
+  font-weight: 500;
+}
+.main .grid .grid__row .about-us .about-us-content p:last-child {
+  margin-bottom: 0; /* Loại bỏ khoảng trống dưới cùng cho đoạn văn cuối cùng */
+  padding-left: 20px;
+  margin-bottom: 10px; /* Khoảng cách dưới */
+  overflow: hidden; /* Ẩn nội dung vượt quá */
+  text-overflow: ellipsis; /* Hiển thị dấu ba chấm cho nội dung vượt quá */
+}
+.main .grid .row-2 {
+  width: 85%;
+  margin: 20px auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+.main .grid .slick-prev {
+  position: absolute;
+  z-index: 1;
+  left: -3%;
+  top: 50%;
+}
+.main .grid .slick-next {
+  z-index: 1;
+  top: 50%;
+  right: 10px;
+  position: absolute;
+  right: -3%;
+}
+.main .grid .slick-prev,
+.main .grid .slick-next {
+  font-size: 2rem;
+  padding: 6px 12px;
+  background-color: transparent;
+  color: var(--main-color);
+  font-weight: 500;
+  outline: none;
+  text-decoration: none;
+  border-radius: 50%;
+}
+.main .grid .slick-prev:hover,
+.main .grid .slick-next:hover {
+  background-color: var(--primary-color);
+  opacity: 0.5;
+  cursor: pointer;
+}
+.main .grid .fa-angle-left,
+.main .grid .fa-angle-right {
+  background-color: transparent;
+  text-decoration: none;
+  color: var(--main-color);
+}
+.main .grid .newProject-box {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+.main .grid .pro-img {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  /* Ẩn phần vượt quá max-height */
+}
+.main .grid .pro-img .img-tag {
+  display: block;
+  width: 100%;
+  max-height: 100%;
+  /* Đảm bảo chiều cao không vượt quá 100% */
+}
+.main .grid .hero-carousel {
+  width: 100%;
+  height: 85%;
+  padding: auto;
+}
+.main .grid .hero-carousel .body-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  white-space: nowrap;
+}
+.main .grid .hero-carousel .body-title h1 {
+  font-size: 3.2rem;
+  color: var(--main-color);
+  font-weight: 400;
+}
+.main .grid .body-carousel-box {
+  height: 100%;
+  width: 100%;
+}
+.main .grid .body-carousel-box .item {
+  position: relative;
+  display: inline-block;
+  -o-object-fit: cover;
+  object-fit: cover;
+  margin: 0px;
+}
+.main .grid .body-carousel-box .description {
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  color: var(--white-color);
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+.main .grid .body-carousel-box .description .description-title {
+  color: var(--white-color);
+  font-size: 2.6rem;
+  font-weight: 600;
+  margin: 3px;
+  text-decoration: none;
+}
+.main .grid .body-carousel-box .description .description-details {
+  font-size: 1.8rem;
+  line-height: 1.5;
+}
+.main .grid .body-carousel-box .description .description-detail-more {
+  color: var(--white-color);
+  font-size: 1.6rem;
+}
+.main .grid .body-carousel-box .description .description-detail-more:hover {
+  color: var(--highlight-color);
+}
+.main .grid .body-carousel-box .item:hover .description {
+  height: 50%;
+  transform: translateX(-50%) translateY(0%);
+  opacity: 1;
+}
+.main .grid .body-picture {
+  width: 100%;
+  height: auto;
+}
+.main .grid .hero-carousel .single-carousel img {
+  width: 100%;
+  height: 50vh;
+  -o-object-fit: cover;
+  object-fit: cover;
+  -o-object-position: 50% 50%;
+  object-position: 50% 50%;
+  transition: opacity 0.5s ease;
+  z-index: 1;
+  padding: 0;
+}
+.main .grid .staff-introduction {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px auto;
+  margin: auto;
+  width: 85%;
+  padding: 20px auto;
+  height: 85vh;
+}
+.main .grid .staff-introduction .staff-title h1 {
+  margin: 50px auto 0;
+  font-size: 3.2rem;
+  color: var(--main-color);
+  font-weight: 400;
+}
+.main .grid .staff-introduction .staff-carousel {
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+.main .grid .staff-introduction .staff-carousel .staff-container {
+  height: 60vh;
+  background: linear-gradient(
+    to bottom,
+    var(--primary-color),
+    var(--white-color)
+  );
+  text-decoration: none;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  margin: 10px;
+  flex: 0 0 30%;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: space-around;
+}
+.main .grid .staff-introduction .staff-carousel .staff-container .staff-avt {
+  width: 100px;
+  height: 100px;
+  background-color: #ccc;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+.main
+  .grid
+  .staff-introduction
+  .staff-carousel
+  .staff-container
+  .staff-name
+  h1 {
+  padding: auto;
+  margin-bottom: 5px;
+  font-size: 2rem;
+  font-weight: 600;
+}
+.main .grid .staff-introduction .staff-carousel .staff-container .staff-info p {
+  margin-bottom: 10px;
+  font-size: 1.8rem;
+  font-weight: 400;
+  white-space: wrap;
+  line-height: 1.3;
+}
+.main .grid .staff-introduction .staff-carousel .staff-container button {
+  font-size: 2rem;
+  font-weight: 400;
+  padding: 20px 30px;
+  background-color: var(--main-color);
+  color: var(--white-color);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.main .grid .staff-introduction .staff-carousel .staff-container button:hover {
+  background-color: var(--highlight-color);
+}
+.grid {
+  width: 1200px;
+  max-width: 100%;
+  margin: 0 auto !important;
+
+}

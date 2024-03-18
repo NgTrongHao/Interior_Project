@@ -1,0 +1,46 @@
+
+@import url("../../../BaseCss/base.css");
+/* --body-- */
+.main {
+  display: block;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--white-color);
+  height: 600px;
+  width: 100%;
+  height: 100% !important;
+}
+/* .body-picture {
+  @apply h-[600px] w-full overflow-hidden;
+}; */
+.grid {
+  height: 100%;
+}
+
+/* Trong CSS của bạn */
+.hero-carousel .single-carousel img {
+  width: 100%;
+  height: 80vh;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: 50% 50%;
+     object-position: 50% 50%;
+  transition: opacity 0.5s ease;
+  z-index: 1;
+}
+
+
+.item {
+  display: none;
+}
+
+.body-picture {
+  width: 100%;
+  height: auto;
+}
+
+.item { /* IE 9 */ /* Safari 3-8 */
+  transform: scale(1);
+  transition: transform 20s; /* Không áp dụng hiệu ứng trong trường hợp hover */
+  overflow: hidden;
+}/*# sourceMappingURL=homePage.css.map */

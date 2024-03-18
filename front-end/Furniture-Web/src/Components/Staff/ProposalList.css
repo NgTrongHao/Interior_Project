@@ -1,0 +1,28 @@
+@import url('../../BaseCss/base.css');
+.Proposal-box{
+    width: 100% !important;
+}
+.Proposal-box table{
+    width: 100% !important;
+}
+.Proposal-box thead tr th{
+    text-align: left !important;
+    
+}
+.Proposal-box h1{
+    font-size: 1.8rem;
+    font-weight: 600 ;
+    color: var(--main-color);
+}
+.Proposal-box tbody td{
+    justify-content: flex-start;
+}
+.css-1e6y48t-MuiButtonBase-root-MuiButton-root{
+    background-color: var(--highlight-color) !important;
+    margin: 10px !important;
+    padding: 10px 20px !important;
+    border-radius: 5px !important;
+    font-size: 1.2rem !important;
+    font-weight: 500 !important;
+
+}
