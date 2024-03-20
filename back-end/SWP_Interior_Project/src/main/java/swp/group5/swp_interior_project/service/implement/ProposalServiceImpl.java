@@ -86,7 +86,8 @@ public class ProposalServiceImpl implements ProposalService {
         if (proposal != null) {
             proposal.setEmployeeStatus(ProposalStatus.REJECTED);
             Request request = proposal.getRequestVersion().getRequest();
-            request.setRequestStatusEmployee(RequestStatus.MANAGER_REJECTED);
+//            request.setRequestStatusEmployee(RequestStatus.MANAGER_REJECTED);
+            request.setRequestStatusEmployee(RequestStatus.WAITING_FOR_PLANNING);
             
             UserInfo userInfo = userInfoService.findByUsername(username);
             RequestStatusHistory requestStatusHistory = requestStatusHistoryService.createNewRequestStatusHistory(requestVersionService.getLastRequestVersionByRequest(request), RequestStatus.MANAGER_REJECTED, userInfo);
@@ -117,7 +118,8 @@ public class ProposalServiceImpl implements ProposalService {
         if (proposal != null) {
             proposal.setCustomerStatus(ProposalStatus.REJECTED);
             Request request = proposal.getRequestVersion().getRequest();
-            request.setRequestStatusCustomer(RequestStatus.CONSTRUCTION_REJECTED);
+//            request.setRequestStatusCustomer(RequestStatus.CONSTRUCTION_REJECTED);
+            request.setRequestStatusCustomer(RequestStatus.REQUESTED);
             
             UserInfo userInfo = userInfoService.findByUsername(username);
             RequestStatusHistory requestStatusHistory = requestStatusHistoryService.createNewRequestStatusHistory(requestVersionService.getLastRequestVersionByRequest(request), RequestStatus.CONSTRUCTION_REJECTED, userInfo);

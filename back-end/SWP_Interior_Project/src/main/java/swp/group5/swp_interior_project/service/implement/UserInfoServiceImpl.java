@@ -15,6 +15,7 @@ import swp.group5.swp_interior_project.model.entity.UserInfo;
 import swp.group5.swp_interior_project.model.enums.AccountRole;
 import swp.group5.swp_interior_project.model.enums.RequestStatus;
 import swp.group5.swp_interior_project.repository.UserInfoRepository;
+import swp.group5.swp_interior_project.service.interfaces.MailSenderService;
 import swp.group5.swp_interior_project.service.interfaces.UserInfoService;
 import swp.group5.swp_interior_project.service.security.UserInfoDetails;
 
@@ -28,6 +29,8 @@ public class UserInfoServiceImpl implements UserInfoService {
     
     @Autowired
     private UserInfoRepository userInfoRepository;
+    @Autowired
+    private MailSenderService mailSenderService;
     
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     
@@ -45,7 +48,9 @@ public class UserInfoServiceImpl implements UserInfoService {
         }
         UserInfo user = convertCustomer(customerDto);
         userInfoRepository.save(user);
+        
         // Consider sending a welcome email or notification here
+        mailSenderService.sendMail(customerDto.getEmail(), "Welcome to FurnitureDesign", welcomeCustomerMessage(customerDto.getFullName(), customerDto.getEmail(), customerDto.getPhone()));
     }
     
     @Override
@@ -183,4 +188,37 @@ public class UserInfoServiceImpl implements UserInfoService {
         existingEmployee.setStatus(status);
         userInfoRepository.save(existingEmployee);
     }
+    
+    private String welcomeCustomerMessage(String fullName, String email, String phone) {
+        return "<!DOCTYPE html>"
+                + "<html lang=\"en\">"
+                + "<head>"
+                + "    <meta charset=\"UTF-8\">"
+                + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
+                + "    <title>Welcome to Furniture Design</title>"
+                + "    <style>"
+                + "        body { font-family: Arial, sans-serif; }"
+                + "        .email-container { max-width: 600px; margin: auto; border: 1px solid #ccc; padding: 20px; }"
+                + "        .button { background-color: #bde2f6; color: white; padding: 10px 20px; text-align: center;"
+                + "                  display: inline-block; border-radius: 5px; text-decoration: none; }"
+                + "    </style>"
+                + "</head>"
+                + "<body>"
+                + "<div class=\"email-container\">"
+                + "    <h2>Welcome to Furniture Design!</h2>"
+                + "    <p>Dear " + fullName + ",</p>"
+                + "    <p>We're thrilled to have you with us. Your journey to exquisite interiors starts here. Below are your login details:</p>"
+                + "    <ul>"
+                + "        <li><strong>Username:</strong> " + email + "</li>"
+                + "        <li><strong>Password:</strong> " + phone + "</li>"
+                + "    </ul>"
+                + "    <p>Please use these credentials to log in and start your project:</p>"
+                + "    <a href=\"http://localhost:5173/login\" class=\"button\">Login to Your Account</a>"
+                + "    <p>We're here to assist you every step of the way. Let's create something beautiful together!</p>"
+                + "    <p>Warm regards,<br>The Furniture Design Team</p>"
+                + "</div>"
+                + "</body>"
+                + "</html>";
+    }
+    
 }
