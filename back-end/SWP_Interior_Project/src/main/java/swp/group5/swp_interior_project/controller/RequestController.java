@@ -219,7 +219,7 @@ public class RequestController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         proposalService.confirmProposal(username, proposalId);
-        return ResponseEntity.status(HttpStatus.OK).body("Proposal with id " + proposalId + "is confirmed successfully!");
+        return ResponseEntity.status(HttpStatus.OK).body("Proposal with id " + proposalId + " is confirmed successfully!");
     }
     
     // Endpoint to reject a proposal by the manager
@@ -242,7 +242,7 @@ public class RequestController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         proposalService.rejectProposal(username, proposalId);
-        return ResponseEntity.status(HttpStatus.OK).body("Proposal with id " + proposalId + "is rejected!");
+        return ResponseEntity.status(HttpStatus.OK).body("Proposal with id " + proposalId + " is rejected!");
     }
     
     // Endpoint for confirming a proposal by the customer

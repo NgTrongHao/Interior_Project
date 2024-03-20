@@ -17,6 +17,8 @@ public class ProposalDto {
     private ProposalStatus employeeStatus;
     private ProposalStatus customerStatus;
     private String description;
+    
+    @JsonProperty("file_name")
     private String fileName;
     
     @JsonProperty("file_path")
