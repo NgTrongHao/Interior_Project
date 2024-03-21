@@ -40,22 +40,44 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional
     public Request addRequest(RequestDto requestDto) {
-        // Create a new Request object
-        Request request = new Request();
         
-        // Find user information
-        UserInfo userInfo = userInfoService.findByUsername(requestDto.getCustomer().getEmail());
+        Request request, saveRequest;
         
-        // Set user information for the request
-        request.setCustomer(userInfo);
-        request.setRequestStatusEmployee(RequestStatus.REQUESTED);
-        request.setRequestStatusCustomer(RequestStatus.REQUESTED);
+        RequestVersion requestVersion;
         
-        // Save the request
-        Request saveRequest = requestRepository.save(request);
+        UserInfo userInfo;
         
-        // Create a new request version
-        RequestVersion requestVersion = requestVersionService.createNewRequestVersion(saveRequest, 1);
+        if (requestDto.getId() != null) {
+            request = requestRepository.findById(requestDto.getId()).orElseThrow(null);
+            
+            userInfo = request.getCustomer();
+            
+            request.setRequestStatusEmployee(RequestStatus.CONSTRUCTION_REJECTED);
+            request.setRequestStatusCustomer(RequestStatus.REQUESTED);
+            
+            // Save the request
+            saveRequest = requestRepository.save(request);
+            
+            requestVersion = requestVersionService.createNewRequestVersion(saveRequest, request.getVersions().size() + 1);
+        } else {
+            // Create a new Request object
+            request = new Request();
+            
+            // Find user information
+            userInfo = userInfoService.findByUsername(requestDto.getCustomer().getEmail());
+            
+            // Set user information for the request
+            request.setCustomer(userInfo);
+            
+            request.setRequestStatusEmployee(RequestStatus.REQUESTED);
+            request.setRequestStatusCustomer(RequestStatus.REQUESTED);
+            
+            // Save the request
+            saveRequest = requestRepository.save(request);
+            
+            // Create a new request version
+            requestVersion = requestVersionService.createNewRequestVersion(saveRequest, 1);
+        }
         
         // Create request detail list from DTO and add to request version
         List<RequestDetail> requestDetailList = requestDto.getRequestDetails().stream()
