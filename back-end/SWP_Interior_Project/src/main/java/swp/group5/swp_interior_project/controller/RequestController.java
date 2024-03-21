@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import swp.group5.swp_interior_project.model.dto.ProposalDto;
 import swp.group5.swp_interior_project.model.dto.request.RequestDto;
+import swp.group5.swp_interior_project.model.entity.Request;
 import swp.group5.swp_interior_project.model.enums.RequestStatus;
 import swp.group5.swp_interior_project.service.interfaces.ProposalService;
 import swp.group5.swp_interior_project.service.interfaces.RequestService;
@@ -289,7 +290,8 @@ public class RequestController {
     public ResponseEntity<?> rejectProposalByCustomer(@PathVariable UUID proposalId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        proposalService.rejectProposalByCustomer(username, proposalId);
+        Request request = proposalService.rejectProposalByCustomer(username, proposalId);
+        requestService.addRequest(requestService.convertRequest(request));
         return ResponseEntity.status(HttpStatus.OK).body("Proposal with id " + proposalId + "is rejected by customer!");
     }
     

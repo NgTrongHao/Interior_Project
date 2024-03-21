@@ -113,18 +113,21 @@ public class ProposalServiceImpl implements ProposalService {
     }
     
     @Override
-    public void rejectProposalByCustomer(String username, UUID proposalId) {
+    public Request rejectProposalByCustomer(String username, UUID proposalId) {
         Proposal proposal = proposalRepository.findById(proposalId).orElseThrow(() -> new NotFoundEntityException("Proposal not found"));
         if (proposal != null) {
             proposal.setCustomerStatus(ProposalStatus.REJECTED);
             Request request = proposal.getRequestVersion().getRequest();
-//            request.setRequestStatusCustomer(RequestStatus.CONSTRUCTION_REJECTED);
-            request.setRequestStatusCustomer(RequestStatus.REQUESTED);
+            request.setRequestStatusCustomer(RequestStatus.CONSTRUCTION_REJECTED);
+//            request.setRequestStatusCustomer(RequestStatus.REQUESTED);
+            request.setRequestStatusEmployee(RequestStatus.CONSTRUCTION_REJECTED);
             
             UserInfo userInfo = userInfoService.findByUsername(username);
             RequestStatusHistory requestStatusHistory = requestStatusHistoryService.createNewRequestStatusHistory(requestVersionService.getLastRequestVersionByRequest(request), RequestStatus.CONSTRUCTION_REJECTED, userInfo);
             requestStatusHistory.setProposal(proposal);
             proposalRepository.save(proposal);
+            return request;
         }
+        throw new NotFoundEntityException("Proposal not found");
     }
 }
