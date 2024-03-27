@@ -68,6 +68,7 @@ public class ProposalServiceImpl implements ProposalService {
         Proposal proposal = proposalRepository.findById(proposalId).orElseThrow(() -> new NotFoundEntityException("Proposal not found"));
         if (proposal != null) {
             proposal.setEmployeeStatus(ProposalStatus.APPROVED);
+            proposal.setCustomerStatus(ProposalStatus.PENDING);
             Request request = proposal.getRequestVersion().getRequest();
             request.setRequestStatusEmployee(RequestStatus.MANAGER_APPROVED);
             request.setRequestStatusCustomer(RequestStatus.QUOTATION_COMPLETED);

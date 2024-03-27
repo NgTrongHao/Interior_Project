@@ -16,7 +16,7 @@ public class UserInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "full_name", nullable = false)
+    @Column(name = "full_name", nullable = false, columnDefinition = "nvarchar(255)")
     private String fullName;
     
     @Column(name = "email", length = 50, nullable = false)
@@ -28,10 +28,10 @@ public class UserInfo {
     @Column(name = "id_card", unique = true)
     private String idCard;
     
-    @Column(name = "note")
+    @Column(name = "note", columnDefinition = "nvarchar(max)")
     private String note;
     
-    @Column(name = "address")
+    @Column(name = "address", columnDefinition = "nvarchar(max)")
     private String address;
     
     @Column(name = "username", nullable = false, unique = true)

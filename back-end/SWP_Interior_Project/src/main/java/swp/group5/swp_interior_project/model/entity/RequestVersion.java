@@ -18,6 +18,8 @@ public class RequestVersion {
     private String id;
     
     private int versionNumber;
+    
+    @Column(columnDefinition = "nvarchar(255)")
     private String description;
     
     @ManyToOne(fetch = FetchType.EAGER)

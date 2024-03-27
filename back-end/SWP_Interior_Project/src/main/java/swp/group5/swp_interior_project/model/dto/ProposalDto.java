@@ -15,7 +15,9 @@ import java.util.UUID;
 public class ProposalDto {
     private UUID id;
     private ProposalStatus employeeStatus;
+    private String employeeStatusDescription;
     private ProposalStatus customerStatus;
+    private String customerStatusDescription;
     private String description;
     
     @JsonProperty("file_name")
@@ -25,4 +27,13 @@ public class ProposalDto {
     private String filePath;
     
     private BigDecimal price;
+    
+    public String getEmployeeStatusDescription() {
+        return employeeStatus != null ? employeeStatus.getDescription() : null;
+    }
+    
+    public String getCustomerStatusDescription() {
+        return customerStatus != null ? customerStatus.getDescription() : null;
+    }
+    
 }

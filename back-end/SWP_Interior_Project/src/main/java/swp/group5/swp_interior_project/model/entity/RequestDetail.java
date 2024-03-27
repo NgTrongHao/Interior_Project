@@ -25,6 +25,7 @@ public class RequestDetail {
     @JoinColumn(name = "workspace_id")
     private Workspace workspace;
     
+    @Column(columnDefinition = "nvarchar(max)")
     private String description;
     private BigDecimal length;
     private BigDecimal width;
