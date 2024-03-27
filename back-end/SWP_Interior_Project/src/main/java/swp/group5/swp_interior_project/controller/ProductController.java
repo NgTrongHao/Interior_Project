@@ -26,8 +26,8 @@ public class ProductController {
      * Input Parameters: productId (Long) - ID of the product to be deleted.
      * Expected Output: Confirmation message of successful deletion.
      */
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteProduct(@RequestParam Long productId) {
+    @DeleteMapping("/delete/{productId}")
+    public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
         productService.deleteProduct(productId);
         return ResponseEntity.ok("Delete successfully");
     }
