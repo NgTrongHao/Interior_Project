@@ -5,17 +5,17 @@ import lombok.Getter;
 @Getter
 public enum RequestStatus {
     // For Customers
-    REQUESTED("Request submitted"),
-    QUOTATION_PROCESSING("Quotation processing"),
-    QUOTATION_COMPLETED("Quotation received"),
-    CONSTRUCTION_IN_PROGRESS("Construction in progress"),
-    CONSTRUCTION_REJECTED("Rejected by customer"), // Use "Rejected" for clarity
+    REQUESTED("Chờ xác nhận yêu cầu báo giá"),
+    QUOTATION_PROCESSING("Báo giá đang được xử lý"),
+    QUOTATION_COMPLETED("Báo giá hoàn tất - Chờ xác nhận"),
+    CONSTRUCTION_IN_PROGRESS("Báo giá hoàn tất - Tiến hành thi công"),
+    CONSTRUCTION_REJECTED("Khách hàng bác bỏ báo giá"), // Use "Rejected" for clarity
     
     // For Staff and Managers
-    WAITING_FOR_PLANNING ("Awaiting plan"),
-    PROPOSAL_AWAITING_APPROVAL("Awaiting manager approval"), // More descriptive
-    MANAGER_APPROVED("Manager approved"),
-    MANAGER_REJECTED("Manager rejected");
+    WAITING_FOR_PLANNING ("Đang chờ đề xuất báo giá"),
+    PROPOSAL_AWAITING_APPROVAL("Đề xuất đang chờ được xác nhận"), // More descriptive
+    MANAGER_APPROVED("Quản lý chấp thuận đề xuất"),
+    MANAGER_REJECTED("Quản lý bác bỏ đề xuất");
     
     private final String description;
     

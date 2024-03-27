@@ -18,8 +18,18 @@ public class RequestDto {
     private UUID id;
     private BigDecimal price;
     private RequestStatus customerRequestStatus;
+    private String customerRequestStatusDescription;
     private RequestStatus employeeRequestStatus;
+    private String employeeRequestStatusDescription;
     private CustomerDto customer;
     private List<RequestDetailDto> requestDetails;
     private ProposalDto proposal;
+    
+    public String getCustomerRequestStatusDescription() {
+        return customerRequestStatus != null ? customerRequestStatus.getDescription() : null;
+    }
+    
+    public String getEmployeeRequestStatusDescription() {
+        return employeeRequestStatus != null ? employeeRequestStatus.getDescription() : null;
+    }
 }

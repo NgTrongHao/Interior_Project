@@ -20,6 +20,7 @@ public class Proposal {
     @Enumerated(EnumType.STRING)
     private ProposalStatus employeeStatus;
     
+    @Column(columnDefinition = "nvarchar(max)")
     private String description;
     
     @ManyToOne

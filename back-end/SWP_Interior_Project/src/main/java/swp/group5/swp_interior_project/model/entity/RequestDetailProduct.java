@@ -20,5 +20,7 @@ public class RequestDetailProduct {
     private Product product;
     
     private int quantity;
+    
+    @Column(columnDefinition = "nvarchar(max)")
     private String description;
 }
