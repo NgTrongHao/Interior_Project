@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import swp.group5.swp_interior_project.exception.NotFoundEntityException;
 import swp.group5.swp_interior_project.model.dto.request.RequestDto;
+import swp.group5.swp_interior_project.model.dto.request.RequestVersionDto;
 import swp.group5.swp_interior_project.model.entity.*;
 import swp.group5.swp_interior_project.model.enums.RequestStatus;
 import swp.group5.swp_interior_project.repository.RequestRepository;
@@ -225,5 +226,11 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public List<Object[]> getAverageWaitingTimeForLast7Days() {
         return requestStatusHistoryService.getAverageWaitingTimeForLast7Days();
+    }
+    
+    @Override
+    public List<RequestVersionDto> getRequestHistoryList(UUID requestId) {
+        Request request = getRequestById(requestId);
+        return request.getVersions().stream().map(requestVersionService::convertRequestVersion).toList();
     }
 }

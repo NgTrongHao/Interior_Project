@@ -1,5 +1,6 @@
 package swp.group5.swp_interior_project.service.interfaces;
 
+import swp.group5.swp_interior_project.model.dto.request.RequestStatusHistoryDto;
 import swp.group5.swp_interior_project.model.entity.RequestStatusHistory;
 import swp.group5.swp_interior_project.model.entity.RequestVersion;
 import swp.group5.swp_interior_project.model.entity.UserInfo;
@@ -15,4 +16,6 @@ public interface RequestStatusHistoryService {
     List<Object[]> getMonthlyTotalPrice();
     
     List<Object[]> getAverageWaitingTimeForLast7Days();
+    
+    RequestStatusHistoryDto convertRequestStatusHistory(RequestStatusHistory requestStatusHistory);
 }

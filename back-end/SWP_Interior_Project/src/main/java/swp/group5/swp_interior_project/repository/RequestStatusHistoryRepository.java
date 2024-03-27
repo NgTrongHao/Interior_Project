@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import swp.group5.swp_interior_project.model.entity.RequestStatusHistory;
+import swp.group5.swp_interior_project.model.entity.RequestVersion;
 import swp.group5.swp_interior_project.utils.MonthConverter;
 
 import java.time.LocalDateTime;
@@ -40,6 +41,6 @@ public interface RequestStatusHistoryRepository extends JpaRepository<RequestSta
     List<Object[]> getAverageWaitingTimeForLast7Days(LocalDateTime startDate);
     
     
-    
+    List<RequestStatusHistory> findAllByRequestVersion(RequestVersion requestVersion);
     
 }
