@@ -3,6 +3,7 @@ package swp.group5.swp_interior_project.service.interfaces;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
 import swp.group5.swp_interior_project.model.dto.request.RequestDto;
+import swp.group5.swp_interior_project.model.dto.request.RequestVersionDto;
 import swp.group5.swp_interior_project.model.entity.Request;
 import swp.group5.swp_interior_project.model.enums.RequestStatus;
 
@@ -27,4 +28,6 @@ public interface RequestService {
     List<Object[]> getMonthlyTotalPrice();
     
     List<Object[]> getAverageWaitingTimeForLast7Days();
+    
+    List<RequestVersionDto> getRequestHistoryList(UUID requestId);
 }

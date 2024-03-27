@@ -2,6 +2,7 @@ package swp.group5.swp_interior_project.service.implement;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import swp.group5.swp_interior_project.model.dto.request.RequestStatusHistoryDto;
 import swp.group5.swp_interior_project.model.entity.RequestStatusHistory;
 import swp.group5.swp_interior_project.model.entity.RequestVersion;
 import swp.group5.swp_interior_project.model.entity.UserInfo;
@@ -47,10 +48,19 @@ public class RequestStatusHistoryServiceImpl implements RequestStatusHistoryServ
     }
     
     public List<Object[]> getAverageWaitingTimeForLast7Days() {
-        // Lấy ngày bắt đầu của 7 ngày gần nhất
         LocalDateTime startDate = LocalDateTime.now().minusDays(7);
         
         // Gọi phương thức từ repository để lấy dữ liệu
         return requestStatusHistoryRepository.getAverageWaitingTimeForLast7Days(startDate);
+    }
+    
+    @Override
+    public RequestStatusHistoryDto convertRequestStatusHistory(RequestStatusHistory requestStatusHistory) {
+        RequestStatusHistoryDto statusHistoryDto = new RequestStatusHistoryDto();
+        statusHistoryDto.setId(requestStatusHistory.getId());
+        statusHistoryDto.setRequestStatus(requestStatusHistory.getStatus());
+        statusHistoryDto.setUser(userInfoService.getUserInfoProfileByUsername(requestStatusHistory.getUser().getUsername()));
+        statusHistoryDto.setDateTime(requestStatusHistory.getDateTime());
+        return statusHistoryDto;
     }
 }
