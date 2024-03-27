@@ -16,7 +16,9 @@ import swp.group5.swp_interior_project.service.interfaces.WorkspaceService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class RequestDetailServiceImpl implements RequestDetailService {
@@ -70,7 +72,13 @@ public class RequestDetailServiceImpl implements RequestDetailService {
         requestDetailDto.setLength(requestDetail.getLength());
         requestDetailDto.setWidth(requestDetail.getWidth());
         
-        // Khởi tạo danh sách chứa thông tin về sản phẩm
+        List<ProductDetailDto> productDetailDtoList = getProductDetailDtoList(requestDetail);
+        requestDetailDto.setProducts(productDetailDtoList);
+        
+        return requestDetailDto;
+    }
+    
+    private List<ProductDetailDto> getProductDetailDtoList(RequestDetail requestDetail) {
         List<ProductDetailDto> productDetailDtoList = new ArrayList<>();
         for (RequestDetailProduct requestDetailProduct : requestDetail.getRequestDetailProducts()) {
             ProductDetailDto productDetailDto = new ProductDetailDto();
@@ -79,9 +87,7 @@ public class RequestDetailServiceImpl implements RequestDetailService {
             productDetailDto.setDescription(requestDetailProduct.getDescription());
             productDetailDtoList.add(productDetailDto);
         }
-        requestDetailDto.setProducts(productDetailDtoList);
-        
-        return requestDetailDto;
+        return productDetailDtoList;
     }
     
     @Override
@@ -109,52 +115,123 @@ public class RequestDetailServiceImpl implements RequestDetailService {
         // Get the list of current request details of the request version
         List<RequestDetail> existingRequestDetails = requestDetailRepository.findByRequestVersion(requestVersion);
         
+        // Initialize a map to store existing request details by their IDs
+        Map<Long, RequestDetail> existingRequestDetailMap = existingRequestDetails.stream()
+                .collect(Collectors.toMap(RequestDetail::getId, Function.identity()));
+        
         // Initialize a list to store updated or newly created request details
         List<RequestDetail> updatedRequestDetails = new ArrayList<>();
         
-        // Iterate through the list of request details updated from DTO
+        // Loop through the updated request detail DTOs
         for (RequestDetailDto updateRequestDetailDto : updateRequestDetailList) {
-            // Check if the request detail exists in the current list
-            Optional<RequestDetail> existingDetailOptional = existingRequestDetails.stream()
-                    .filter(detail -> detail.getRequestVersion().equals(requestVersion) && detail.getRequestDetailProducts().stream()
-                            .anyMatch(product -> product.getProduct().getId().equals(updateRequestDetailDto.getProducts().getFirst().getProductId())))
-                    .findFirst();
+            // Check if the update request detail has an ID
+            if (updateRequestDetailDto.getId() != null) {
+                Long updateRequestId = updateRequestDetailDto.getId();
+                // Check if the update request detail exists in the existing details
+                if (existingRequestDetailMap.containsKey(updateRequestId)) {
+                    // Update the existing request detail
+                    RequestDetail existingRequestDetail = existingRequestDetailMap.get(updateRequestId);
+                    updateRequestDetail(existingRequestDetail, updateRequestDetailDto);
+                    updatedRequestDetails.add(existingRequestDetail);
+                    // Remove the updated detail from the map
+                    existingRequestDetailMap.remove(updateRequestId);
+                    continue;
+                }
+            }
             
-            // If the request detail exists, update the product information
-            existingDetailOptional.ifPresent(existingDetail -> {
-                // Get the corresponding product in the request detail's product list
-                RequestDetailProduct matchedProduct = existingDetail.getRequestDetailProducts().stream()
-                        .filter(product -> product.getProduct().getId().equals(updateRequestDetailDto.getProducts().getFirst().getProductId()))
-                        .findFirst()
-                        .orElseThrow(() -> new RuntimeException("Product not found in existing request detail"));
-                // Update the product information
-                matchedProduct.setDescription(updateRequestDetailDto.getProducts().getFirst().getDescription());
-                matchedProduct.setQuantity(updateRequestDetailDto.getProducts().getFirst().getQuantity());
-                // Add the request detail to the update list
-                updatedRequestDetails.add(existingDetail);
-            });
-            
-            // If the request detail does not exist, create a new one and add to the update list
-            existingDetailOptional.orElseGet(() -> {
-                RequestDetail newRequestDetail = convertRequestDetail(updateRequestDetailDto);
+            // Find the most appropriate existing request detail for updating
+            RequestDetail existingRequestDetail = findMostAppropriateExistingDetail(existingRequestDetailMap, updateRequestDetailDto);
+            if (existingRequestDetail != null) {
+                updateRequestDetail(existingRequestDetail, updateRequestDetailDto);
+                updatedRequestDetails.add(existingRequestDetail);
+                // Remove the updated detail from the map
+                existingRequestDetailMap.remove(existingRequestDetail.getId());
+            } else {
+                // Create a new request detail
+                RequestDetail newRequestDetail = new RequestDetail();
+                newRequestDetail.setWorkspace(workspaceService.getWorkspaceByName(updateRequestDetailDto.getWorkspaceName()));
                 newRequestDetail.setRequestVersion(requestVersion);
+                requestDetailRepository.save(newRequestDetail);
+                updateRequestDetail(newRequestDetail, updateRequestDetailDto);
                 updatedRequestDetails.add(newRequestDetail);
-                return newRequestDetail;
-            });
+            }
         }
         
-        // Save the new request details to the database
+        // Save the updated or newly created request details
         List<RequestDetail> savedRequestDetails = requestDetailRepository.saveAll(updatedRequestDetails);
         
-        // Remove the request details that no longer exist in the current list
-        existingRequestDetails.removeIf(existingDetail ->
-                updateRequestDetailList.stream()
-                        .noneMatch(requestDetailDto -> requestDetailDto.getProducts().getFirst().getProductId().equals(existingDetail.getRequestDetailProducts().getFirst().getProduct().getId()))
-        );
-        requestDetailRepository.deleteAll(existingRequestDetails);
+        // Delete the request details that are no longer in the update list
+        List<RequestDetail> detailsToDelete = new ArrayList<>(existingRequestDetailMap.values());
+        requestDetailRepository.deleteAll(detailsToDelete);
         
-        // Return the list of request details of the request version after updating
+        // Return the list of updated or newly created request details
         return savedRequestDetails;
+    }
+    
+    private void updateRequestDetail(RequestDetail requestDetail, RequestDetailDto updateRequestDetailDto) {
+        // Update properties needed
+        requestDetail.setDescription(updateRequestDetailDto.getDescription());
+        requestDetail.setLength(updateRequestDetailDto.getLength());
+        requestDetail.setWidth(updateRequestDetailDto.getWidth());
+        
+        // Update or add products
+        // Store the list of newly updated RequestDetailProducts
+        List<RequestDetailProduct> updatedProducts = new ArrayList<>();
+        
+        // Create a Map to store RequestDetailProducts by productId
+        Map<Long, RequestDetailProduct> existingProductsMap = requestDetail.getRequestDetailProducts().stream()
+                .collect(Collectors.toMap(product -> product.getProduct().getId(), Function.identity()));
+        
+        // Loop through the ProductDetailDtoList in updateRequestDetailDto
+        for (ProductDetailDto productDto : updateRequestDetailDto.getProducts()) {
+            Long productId = productDto.getProductId();
+            RequestDetailProduct existingProduct = existingProductsMap.get(productId);
+            if (existingProduct != null) {
+                // Update information for existing RequestDetailProduct
+                existingProduct.setQuantity(productDto.getQuantity());
+                existingProduct.setDescription(productDto.getDescription());
+                updatedProducts.add(existingProduct);
+            } else {
+                // Create a new RequestDetailProduct if not existing
+                Product product = productService.findById(productId)
+                        .orElseThrow(() -> new RuntimeException("Product not found with ID: " + productId));
+                RequestDetailProduct newProduct = new RequestDetailProduct();
+                newProduct.setProduct(product);
+                newProduct.setQuantity(productDto.getQuantity());
+                newProduct.setDescription(productDto.getDescription());
+                newProduct.setRequestDetail(requestDetail);
+                updatedProducts.add(requestDetailProductRepository.save(newProduct));
+            }
+        }
+        
+        // Delete RequestDetailProducts that are no longer needed
+        List<RequestDetailProduct> productsToDelete = new ArrayList<>();
+        for (RequestDetailProduct existingProduct : requestDetail.getRequestDetailProducts()) {
+            if (!updatedProducts.contains(existingProduct)) {
+                productsToDelete.add(existingProduct);
+            }
+        }
+        
+        // Remove RequestDetailProducts that no longer exist in the update list
+        requestDetail.getRequestDetailProducts().removeIf(product -> !updatedProducts.contains(product));
+        
+        requestDetailProductRepository.deleteAll(productsToDelete);
+        
+        // Update the RequestDetail's list of RequestDetailProducts
+        requestDetail.setRequestDetailProducts(updatedProducts);
+    }
+    
+    private RequestDetail findMostAppropriateExistingDetail(Map<Long, RequestDetail> existingDetailMap, RequestDetailDto updateRequestDetailDto) {
+        // Loop through existing request details
+        for (RequestDetail existingRequestDetail : existingDetailMap.values()) {
+            // Check if the workspace of the existing request detail matches the workspace of the update request detail
+            if (existingRequestDetail.getWorkspace().getWorkspaceName().equals(updateRequestDetailDto.getWorkspaceName())) {
+                // Return the first matching request detail found
+                return existingRequestDetail;
+            }
+        }
+        // If no matching request detail is found, return null
+        return null;
     }
     
 }

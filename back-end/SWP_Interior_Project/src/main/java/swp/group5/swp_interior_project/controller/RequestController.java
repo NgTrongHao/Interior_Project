@@ -100,6 +100,33 @@ public class RequestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdRequest);
     }
     
+    // Endpoint for updating a request by a customer
+    
+    /**
+     * API Endpoint: /api/v1/request/auth/customer/{requestId}/update
+     * Method: PUT
+     * Description: This API endpoint allows customers to update details of their request identified by requestId.
+     *              The updated request details are provided in the request body as a RequestDto object.
+     * Input Parameters:
+     *   - requestId (UUID): ID of the request to be updated (path variable).
+     *   - requestDto (RequestDto): Updated details of the request (request body).
+     * Expected Output:
+     *   - If successful, the request details will be updated and returned in the response.
+     * Note: This endpoint requires authentication and authorization based on the user's role and permissions.
+     *       The requestService is responsible for updating the request details.
+     */
+    @PutMapping("/auth/customer/{requestId}/update")
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    public ResponseEntity<?> updateRequestByCustomer(
+            @PathVariable UUID requestId,
+            @RequestBody RequestDto requestDto
+    ) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        RequestDto request = requestService.convertRequest(requestService.updateRequestByCustomer(requestId, requestDto, username));
+        return ResponseEntity.status(HttpStatus.OK).body(request);
+    }
+    
     // Endpoint to retrieve a request by ID
     
     /**
