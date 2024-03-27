@@ -328,4 +328,11 @@ public class RequestController {
         return requestService.getRequestHistoryList(requestId);
     }
     
+    @GetMapping("/auth/getRequestList")
+    public List<RequestDto> getRequestListByUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        return requestService.getRequestListByUser(username);
+    }
+    
 }

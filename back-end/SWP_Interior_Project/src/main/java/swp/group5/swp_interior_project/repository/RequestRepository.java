@@ -26,4 +26,12 @@ public interface RequestRepository extends JpaRepository<Request, UUID> {
             "AND r.requestStatusEmployee = :status " +
             "GROUP BY r.customer.username")
     List<Object[]> findStaffAndTotalPriceByRoleAndStatus(@Param("role") AccountRole role, @Param("status") RequestStatus status);
+    
+    @Query("SELECT r.id " +
+            "FROM Request r " +
+            "JOIN r.versions v " +
+            "JOIN v.statusHistories sh " +
+            "JOIN sh.user u " +
+            "WHERE u.username = :username")
+    List<UUID> findRequestListByUser(@Param("username") String username);
 }
