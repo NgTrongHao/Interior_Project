@@ -35,4 +35,8 @@ public interface UserInfoService extends UserDetailsService {
     void updateEmployee(Long id, EmployeeDto updatedEmployee);
     
     void updateEmployeeStatus(Long employeeId, boolean status);
+    
+    CustomerDto getCustomerInfoProfileByUsername(String username);
+    
+    void updateCustomer(String username, CustomerDto customerDto);
 }

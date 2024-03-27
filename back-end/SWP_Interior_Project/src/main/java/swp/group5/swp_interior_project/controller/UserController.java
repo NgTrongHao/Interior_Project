@@ -4,12 +4,12 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import swp.group5.swp_interior_project.model.dto.user.UserDto;
 import swp.group5.swp_interior_project.model.dto.user.authentication.AuthRequestDto;
 import swp.group5.swp_interior_project.model.dto.user.authentication.AuthTokenResponse;
 import swp.group5.swp_interior_project.model.dto.user.customer.CustomerDto;
@@ -68,14 +68,23 @@ public class UserController {
      * Expected Output: Profile information of the user (UserDto).
      */
     @GetMapping("/auth/userProfile")
-    public ResponseEntity<UserDto> userProfile() {
+    public ResponseEntity<CustomerDto> userProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         
-        UserDto userInfoProfileDto = userInfoService.getUserInfoProfileByUsername(username);
-        if (userInfoProfileDto == null) {
+        CustomerDto customerInfoProfileDto = userInfoService.getCustomerInfoProfileByUsername(username);
+        if (customerInfoProfileDto == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(userInfoProfileDto, HttpStatus.OK);
+        return new ResponseEntity<>(customerInfoProfileDto, HttpStatus.OK);
+    }
+    
+    @PatchMapping("/auth/editProfile")
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    public ResponseEntity<?> editProfile(@RequestBody CustomerDto customerDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        userInfoService.updateCustomer(username, customerDto);
+        return ResponseEntity.ok("Customer update successfully!");
     }
 }

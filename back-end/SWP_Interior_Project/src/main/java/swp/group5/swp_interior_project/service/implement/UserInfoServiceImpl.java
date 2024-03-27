@@ -189,6 +189,19 @@ public class UserInfoServiceImpl implements UserInfoService {
         userInfoRepository.save(existingEmployee);
     }
     
+    @Override
+    public CustomerDto getCustomerInfoProfileByUsername(String username) {
+        return convertCustomer(userInfoRepository.findByUsername(username).orElseThrow(() -> new NotFoundEntityException("Customer not found!")));
+    }
+    
+    @Override
+    public void updateCustomer(String username, CustomerDto customerDto) {
+        UserInfo existingCustomer = userInfoRepository.findByUsername(username).orElseThrow(() -> new NotFoundEntityException("Customer not found!"));
+        UserInfo updateCustomer = convertCustomer(customerDto);
+        updateCustomer.setId(existingCustomer.getId());
+        userInfoRepository.save(updateCustomer);
+    }
+    
     private String welcomeCustomerMessage(String fullName, String email, String phone) {
         return "<!DOCTYPE html>"
                 + "<html lang=\"en\">"
