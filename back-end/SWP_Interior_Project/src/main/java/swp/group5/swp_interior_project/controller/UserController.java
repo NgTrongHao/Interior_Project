@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import swp.group5.swp_interior_project.model.dto.user.UserDto;
 import swp.group5.swp_interior_project.model.dto.user.authentication.AuthRequestDto;
 import swp.group5.swp_interior_project.model.dto.user.authentication.AuthTokenResponse;
 import swp.group5.swp_interior_project.model.dto.user.customer.CustomerDto;
@@ -68,11 +69,11 @@ public class UserController {
      * Expected Output: Profile information of the user (UserDto).
      */
     @GetMapping("/auth/userProfile")
-    public ResponseEntity<CustomerDto> userProfile() {
+    public ResponseEntity<UserDto> userProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         
-        CustomerDto customerInfoProfileDto = userInfoService.getCustomerInfoProfileByUsername(username);
+        UserDto customerInfoProfileDto = userInfoService.getUserInfoProfileByUsername(username);
         if (customerInfoProfileDto == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
