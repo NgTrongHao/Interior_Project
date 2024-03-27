@@ -83,6 +83,7 @@ public class RequestDetailServiceImpl implements RequestDetailService {
         for (RequestDetailProduct requestDetailProduct : requestDetail.getRequestDetailProducts()) {
             ProductDetailDto productDetailDto = new ProductDetailDto();
             productDetailDto.setProductId(requestDetailProduct.getProduct().getId());
+            productDetailDto.setProductName(requestDetailProduct.getProduct().getName());
             productDetailDto.setQuantity(requestDetailProduct.getQuantity());
             productDetailDto.setDescription(requestDetailProduct.getDescription());
             productDetailDtoList.add(productDetailDto);
