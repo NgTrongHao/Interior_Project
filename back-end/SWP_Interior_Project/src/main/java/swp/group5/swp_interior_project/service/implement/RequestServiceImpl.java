@@ -86,7 +86,7 @@ public class RequestServiceImpl implements RequestService {
                 .toList();
         
         // Calculate total estimated price from request detail list
-        BigDecimal estimateCost = getBigDecimal(requestDetailList);
+        BigDecimal estimateCost = getEstimatePrice(requestDetailList);
         
         // Set the estimated price for the request
         saveRequest.setEstimatedPrice(estimateCost);
@@ -107,7 +107,7 @@ public class RequestServiceImpl implements RequestService {
         return requestRepository.save(saveRequest);
     }
     
-    private static BigDecimal getBigDecimal(List<RequestDetail> requestDetailList) {
+    private static BigDecimal getEstimatePrice(List<RequestDetail> requestDetailList) {
         BigDecimal estimateCost = BigDecimal.ZERO;
         for (RequestDetail requestDetail : requestDetailList) {
             for (RequestDetailProduct product : requestDetail.getRequestDetailProducts()) {
@@ -176,7 +176,7 @@ public class RequestServiceImpl implements RequestService {
         
         RequestVersion requestVersion = requestVersionService.updateRequestDetailsList(request.getVersions().getLast(), requestDto.getRequestDetails());
         
-        BigDecimal estimatedPrice = getBigDecimal(requestVersion);
+        BigDecimal estimatedPrice = getEstimatePrice(requestVersion);
         request.setEstimatedPrice(estimatedPrice);
         request.setRequestStatusCustomer(RequestStatus.QUOTATION_PROCESSING);
         request.setRequestStatusEmployee(RequestStatus.WAITING_FOR_PLANNING);
@@ -186,7 +186,7 @@ public class RequestServiceImpl implements RequestService {
         return requestRepository.save(request);
     }
     
-    private static BigDecimal getBigDecimal(RequestVersion requestVersion) {
+    private static BigDecimal getEstimatePrice(RequestVersion requestVersion) {
         BigDecimal estimatedPrice = BigDecimal.ZERO;
         for (RequestDetail requestDetail : requestVersion.getRequestDetails()) {
             for (RequestDetailProduct product : requestDetail.getRequestDetailProducts()) {
@@ -197,6 +197,24 @@ public class RequestServiceImpl implements RequestService {
             }
         }
         return estimatedPrice;
+    }
+    
+    @Override
+    @Transactional
+    public Request updateRequestByCustomer(UUID requestId, RequestDto requestDto, String username) {
+        Request request;
+        request = requestRepository.findById(requestId)
+                .orElseThrow(() -> new NotFoundEntityException("Request not found"));
+        if (request.getRequestStatusCustomer() == RequestStatus.QUOTATION_PROCESSING) {
+            throw new RuntimeException("Cannot edit a confirmed request.");
+        }
+        
+        RequestVersion requestVersion = requestVersionService.updateRequestDetailsList(request.getVersions().getLast(), requestDto.getRequestDetails());
+        
+        BigDecimal estimatedPrice = getEstimatePrice(requestVersion);
+        request.setEstimatedPrice(estimatedPrice);
+        
+        return requestRepository.save(request);
     }
     
     @Override

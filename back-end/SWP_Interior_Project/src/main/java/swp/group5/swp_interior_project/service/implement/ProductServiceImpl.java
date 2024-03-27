@@ -12,6 +12,7 @@ import swp.group5.swp_interior_project.repository.ProductRepository;
 import swp.group5.swp_interior_project.service.interfaces.ProductService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -87,5 +88,10 @@ public class ProductServiceImpl implements ProductService {
         product.setPrice(productDto.getPrice());
         product.setDescription(productDto.getDescription());
         return convertProduct(product);
+    }
+    
+    @Override
+    public Optional<Product> findById(Long productId) {
+        return productRepository.findById(productId);
     }
 }

@@ -1,5 +1,6 @@
 package swp.group5.swp_interior_project.service.interfaces;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
 import swp.group5.swp_interior_project.model.dto.request.RequestDto;
 import swp.group5.swp_interior_project.model.entity.Request;
@@ -20,6 +21,8 @@ public interface RequestService {
     List<RequestDto> getRequestByCustomer(String customerUsername, Pageable pageable);
     
     Request adjustAndConfirmRequest(UUID requestId, RequestDto requestDto, String username);
+    
+    Request updateRequestByCustomer(UUID requestId, RequestDto requestDto, String username);
     
     List<Object[]> getMonthlyTotalPrice();
     
