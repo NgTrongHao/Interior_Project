@@ -233,4 +233,12 @@ public class RequestServiceImpl implements RequestService {
         Request request = getRequestById(requestId);
         return request.getVersions().stream().map(requestVersionService::convertRequestVersion).toList();
     }
+    
+    @Override
+    public List<RequestDto> getRequestListByUser(String username) {
+        return requestRepository.findRequestListByUser(username).stream()
+                .map(this::getRequestById)
+                .map(this::convertRequest)
+                .toList();
+    }
 }

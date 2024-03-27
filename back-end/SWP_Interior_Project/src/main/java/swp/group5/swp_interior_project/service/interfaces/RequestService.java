@@ -30,4 +30,6 @@ public interface RequestService {
     List<Object[]> getAverageWaitingTimeForLast7Days();
     
     List<RequestVersionDto> getRequestHistoryList(UUID requestId);
+    
+    List<RequestDto> getRequestListByUser(String username);
 }
