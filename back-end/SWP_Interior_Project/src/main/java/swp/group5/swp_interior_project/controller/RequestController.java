@@ -19,7 +19,9 @@ import swp.group5.swp_interior_project.service.interfaces.ProposalService;
 import swp.group5.swp_interior_project.service.interfaces.RequestService;
 import swp.group5.swp_interior_project.service.session.LockService;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -333,6 +335,20 @@ public class RequestController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         return requestService.getRequestListByUser(username);
+    }
+    
+    @PostMapping("/auth/generateExcel/{requestId}")
+    @PreAuthorize("hasAnyAuthority('ROLE_STAFF', 'ROLE_MANAGER')")
+    public ResponseEntity<String> writeRequestToExcel(
+            @PathVariable UUID requestId,
+            @RequestBody Map<String, String> requestBody
+    ) throws IOException {
+        String outputDirectory = requestBody.get("outputDirectory");
+        String outputFilePath = requestService.writeRequestVersionToExcel(requestId, outputDirectory);
+        if (outputFilePath == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+        return ResponseEntity.accepted().body("File excel has created at " + outputFilePath);
     }
     
 }

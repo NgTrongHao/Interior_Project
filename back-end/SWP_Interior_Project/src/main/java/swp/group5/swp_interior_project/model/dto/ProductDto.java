@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import swp.group5.swp_interior_project.model.enums.ProductUnit;
 
 import java.math.BigDecimal;
 
@@ -20,4 +21,5 @@ public class ProductDto {
     @NotNull(message = "Product price is required")
     @DecimalMin(value = "0", inclusive = false, message = "Product price must be greater than 0")
     private BigDecimal price;
+    private ProductUnit unit;
 }
