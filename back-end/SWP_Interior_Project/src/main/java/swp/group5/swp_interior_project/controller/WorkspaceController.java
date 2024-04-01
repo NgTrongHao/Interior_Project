@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import swp.group5.swp_interior_project.model.dto.ProductDto;
 import swp.group5.swp_interior_project.model.dto.WorkspaceDto;
@@ -59,6 +60,7 @@ public class WorkspaceController {
      * Expected Output: Updated workspace data (WorkspaceDto) with the new product added.
      */
     @PostMapping("/{workspaceName}/products")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     public ResponseEntity<WorkspaceDto> addProductToWorkspace(
             @PathVariable String workspaceName,
             @Valid @RequestBody ProductDto productDto) {
@@ -75,10 +77,18 @@ public class WorkspaceController {
      * Expected Output: A list of all workspaces including the newly added one (WorkspaceDto).
      */
     @PostMapping("/addWorkspace")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     public ResponseEntity<List<WorkspaceDto>> addWorkspace(
             @Valid @RequestBody WorkspaceDto workspaceDto
     ) {
         workspaceService.addWorkspace(workspaceDto);
         return ResponseEntity.ok(workspaceService.getAllWorkspace());
+    }
+    
+    @DeleteMapping("/{workspaceName}")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
+    public ResponseEntity<?> deleteWorkspace(@PathVariable String workspaceName) {
+        workspaceService.deleteWorkspace(workspaceName);
+        return ResponseEntity.noContent().build();
     }
 }

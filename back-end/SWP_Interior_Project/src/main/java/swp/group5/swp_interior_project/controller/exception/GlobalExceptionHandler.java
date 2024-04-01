@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import swp.group5.swp_interior_project.exception.DuplicateEntityException;
 import swp.group5.swp_interior_project.utils.ErrorResponseBuilder;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,4 +69,18 @@ public class GlobalExceptionHandler {
                         403, errors
                 ));
     }
+    
+    @ExceptionHandler(IOException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public ResponseEntity<?> handleIOException(IOException ex) {
+        List<String> errors = Collections.singletonList("Error creating Excel file: " + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponseBuilder.buildErrorResponse(
+                        "Internal Server Error",
+                        "An error occurred while creating the Excel file.",
+                        500, errors
+                ));
+    }
+    
 }

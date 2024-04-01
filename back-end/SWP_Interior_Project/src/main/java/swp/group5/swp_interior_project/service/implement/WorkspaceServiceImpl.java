@@ -47,7 +47,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     @Override
     public Workspace getWorkspaceByName(String workspaceName) {
         return workspaceRepository.findByWorkspaceName(workspaceName)
-                .orElseThrow(null);
+                .orElseThrow(() -> new NotFoundEntityException("Workspace not found with " + workspaceName));
     }
     
     @Override
@@ -79,5 +79,10 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     public List<ProductDto> getAllProductsByWorkspaceName(String workspaceName) {
         Workspace workspace = workspaceRepository.findByWorkspaceName(workspaceName).orElseThrow(()-> new NotFoundEntityException("Workspace not found"));
         return workspace.getProducts().stream().map(productService::convertProduct).toList();
+    }
+    
+    @Override
+    public void deleteWorkspace(String workspaceName) {
+        workspaceRepository.deleteById(getWorkspaceByName(workspaceName).getId());
     }
 }

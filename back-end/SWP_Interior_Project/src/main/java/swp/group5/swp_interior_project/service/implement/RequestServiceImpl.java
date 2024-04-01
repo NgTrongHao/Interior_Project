@@ -6,13 +6,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import swp.group5.swp_interior_project.exception.NotFoundEntityException;
+import swp.group5.swp_interior_project.model.dto.request.RequestDetailDto;
 import swp.group5.swp_interior_project.model.dto.request.RequestDto;
 import swp.group5.swp_interior_project.model.dto.request.RequestVersionDto;
 import swp.group5.swp_interior_project.model.entity.*;
+import swp.group5.swp_interior_project.model.enums.ProductUnit;
 import swp.group5.swp_interior_project.model.enums.RequestStatus;
 import swp.group5.swp_interior_project.repository.RequestRepository;
 import swp.group5.swp_interior_project.service.interfaces.*;
+import swp.group5.swp_interior_project.service.report.ExcelService;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,77 +31,46 @@ public class RequestServiceImpl implements RequestService {
     private final RequestStatusHistoryService requestStatusHistoryService;
     private final UserInfoService userInfoService;
     private final ProposalService proposalService;
+    private final ExcelService excelService;
     
     @Autowired
-    public RequestServiceImpl(RequestRepository requestRepository, RequestDetailService requestDetailService, RequestVersionService requestVersionService, RequestStatusHistoryService requestStatusHistoryService, UserInfoService userInfoService, ProposalService proposalService) {
+    public RequestServiceImpl(RequestRepository requestRepository, RequestDetailService requestDetailService, RequestVersionService requestVersionService, RequestStatusHistoryService requestStatusHistoryService, UserInfoService userInfoService, ProposalService proposalService, ExcelService excelService) {
         this.requestRepository = requestRepository;
         this.requestDetailService = requestDetailService;
         this.requestVersionService = requestVersionService;
         this.requestStatusHistoryService = requestStatusHistoryService;
         this.userInfoService = userInfoService;
         this.proposalService = proposalService;
+        this.excelService = excelService;
     }
     
     @Override
     @Transactional
     public Request addRequest(RequestDto requestDto) {
-        
-        Request request, saveRequest;
-        
-        RequestVersion requestVersion;
-        
-        UserInfo userInfo;
-        
+        Request request = createOrUpdateRequest(requestDto);
+        return requestRepository.save(request);
+    }
+    
+    private Request createOrUpdateRequest(RequestDto requestDto) {
+        Request request;
         if (requestDto.getId() != null) {
-            request = requestRepository.findById(requestDto.getId()).orElseThrow(null);
-            
-            userInfo = request.getCustomer();
-            
+            request = getRequestById(requestDto.getId());
             request.setRequestStatusEmployee(RequestStatus.CONSTRUCTION_REJECTED);
             request.setRequestStatusCustomer(RequestStatus.REQUESTED);
-            
-            // Save the request
-            saveRequest = requestRepository.save(request);
-            
-            requestVersion = requestVersionService.createNewRequestVersion(saveRequest, request.getVersions().size() + 1);
         } else {
-            // Create a new Request object
             request = new Request();
-            
-            // Find user information
-            userInfo = userInfoService.findByUsername(requestDto.getCustomer().getEmail());
-            
-            // Set user information for the request
+            UserInfo userInfo = getUserInfo(requestDto.getCustomer().getEmail());
             request.setCustomer(userInfo);
-            
             request.setRequestStatusEmployee(RequestStatus.REQUESTED);
             request.setRequestStatusCustomer(RequestStatus.REQUESTED);
-            
-            // Save the request
-            saveRequest = requestRepository.save(request);
-            
-            // Create a new request version
-            requestVersion = requestVersionService.createNewRequestVersion(saveRequest, 1);
         }
         
-        // Create request detail list from DTO and add to request version
-        List<RequestDetail> requestDetailList = requestDto.getRequestDetails().stream()
-                .map(requestDetailDto -> requestDetailService.createRequestDetail(requestVersion, requestDetailDto))
-                .peek(requestDetail -> requestVersion.getRequestDetails().add(requestDetail))
-                .toList();
+        Request saveRequest = requestRepository.save(request);
         
-        // Calculate total estimated price from request detail list
-        BigDecimal estimateCost = getEstimatePrice(requestDetailList);
-        
-        // Set the estimated price for the request
-        saveRequest.setEstimatedPrice(estimateCost);
-        saveRequest.setPrice(estimateCost);
-        
-        // Add the request version to the request's version list
+        RequestVersion requestVersion = createRequestVersion(saveRequest);
         saveRequest.getVersions().add(requestVersion);
         
-        // Create new request status history
-        RequestStatusHistory requestStatusHistory = requestStatusHistoryService.createNewRequestStatusHistory(requestVersion, RequestStatus.REQUESTED, userInfo);
+        RequestStatusHistory requestStatusHistory = createRequestStatusHistory(request, RequestStatus.REQUESTED, request.getCustomer());
         if (requestVersion.getStatusHistories() != null) {
             requestVersion.getStatusHistories().add(requestStatusHistory);
         } else {
@@ -105,16 +78,47 @@ public class RequestServiceImpl implements RequestService {
             requestStatusHistories.add(requestStatusHistory);
             requestVersion.setStatusHistories(requestStatusHistories);
         }
-        return requestRepository.save(saveRequest);
+        
+        List<RequestDetail> requestDetailList = createRequestDetails(requestVersion, requestDto.getRequestDetails());
+        BigDecimal estimateCost = calculateEstimatePrice(requestDetailList);
+        
+        saveRequest.setEstimatedPrice(estimateCost);
+        saveRequest.setPrice(estimateCost);
+        
+        return request;
     }
     
-    private static BigDecimal getEstimatePrice(List<RequestDetail> requestDetailList) {
+    private UserInfo getUserInfo(String username) {
+        return userInfoService.findByUsername(username);
+    }
+    
+    private RequestVersion createRequestVersion(Request request) {
+        return requestVersionService.createNewRequestVersion(request, request.getVersions().size() + 1);
+    }
+    
+    private RequestStatusHistory createRequestStatusHistory(Request request, RequestStatus status, UserInfo userInfo) {
+        RequestVersion lastRequestVersion = request.getVersions().getLast();
+        return requestStatusHistoryService.createNewRequestStatusHistory(lastRequestVersion, status, userInfo);
+    }
+    
+    private List<RequestDetail> createRequestDetails(RequestVersion requestVersion, List<RequestDetailDto> requestDetailDtoList) {
+        return requestDetailDtoList.stream()
+                .map(dto -> requestDetailService.createRequestDetail(requestVersion, dto))
+                .peek(requestDetail -> requestVersion.getRequestDetails().add(requestDetail))
+                .collect(Collectors.toList());
+    }
+    
+    private BigDecimal calculateEstimatePrice(List<RequestDetail> requestDetailList) {
         BigDecimal estimateCost = BigDecimal.ZERO;
         for (RequestDetail requestDetail : requestDetailList) {
             for (RequestDetailProduct product : requestDetail.getRequestDetailProducts()) {
                 BigDecimal productPrice = product.getProduct().getPrice();
                 int productQuantity = product.getQuantity();
-                BigDecimal productTotalPrice = productPrice.multiply(BigDecimal.valueOf(productQuantity));
+                BigDecimal productSpecification = BigDecimal.valueOf(1);
+                if (product.getProduct().getUnit().equals(ProductUnit.m2)) {
+                    productSpecification = BigDecimal.valueOf(product.getLength() * product.getWidth());
+                }
+                BigDecimal productTotalPrice = productPrice.multiply(BigDecimal.valueOf(productQuantity).multiply(productSpecification));
                 estimateCost = estimateCost.add(productTotalPrice);
             }
         }
@@ -177,27 +181,15 @@ public class RequestServiceImpl implements RequestService {
         
         RequestVersion requestVersion = requestVersionService.updateRequestDetailsList(request.getVersions().getLast(), requestDto.getRequestDetails());
         
-        BigDecimal estimatedPrice = getEstimatePrice(requestVersion);
+        BigDecimal estimatedPrice = calculateEstimatePrice(requestVersion.getRequestDetails());
         request.setEstimatedPrice(estimatedPrice);
         request.setRequestStatusCustomer(RequestStatus.QUOTATION_PROCESSING);
         request.setRequestStatusEmployee(RequestStatus.WAITING_FOR_PLANNING);
         
         UserInfo userInfo = userInfoService.findByUsername(username);
-        requestStatusHistoryService.createNewRequestStatusHistory(requestVersion, RequestStatus.WAITING_FOR_PLANNING, userInfo);
+        //requestStatusHistoryService.createNewRequestStatusHistory(requestVersion, RequestStatus.WAITING_FOR_PLANNING, userInfo);
+        createRequestStatusHistory(request, RequestStatus.WAITING_FOR_PLANNING, userInfo);
         return requestRepository.save(request);
-    }
-    
-    private static BigDecimal getEstimatePrice(RequestVersion requestVersion) {
-        BigDecimal estimatedPrice = BigDecimal.ZERO;
-        for (RequestDetail requestDetail : requestVersion.getRequestDetails()) {
-            for (RequestDetailProduct product : requestDetail.getRequestDetailProducts()) {
-                BigDecimal productPrice = product.getProduct().getPrice();
-                int productQuantity = product.getQuantity();
-                BigDecimal productTotalPrice = productPrice.multiply(BigDecimal.valueOf(productQuantity));
-                estimatedPrice = estimatedPrice.add(productTotalPrice);
-            }
-        }
-        return estimatedPrice;
     }
     
     @Override
@@ -212,7 +204,7 @@ public class RequestServiceImpl implements RequestService {
         
         RequestVersion requestVersion = requestVersionService.updateRequestDetailsList(request.getVersions().getLast(), requestDto.getRequestDetails());
         
-        BigDecimal estimatedPrice = getEstimatePrice(requestVersion);
+        BigDecimal estimatedPrice = calculateEstimatePrice(requestVersion.getRequestDetails());
         request.setEstimatedPrice(estimatedPrice);
         
         return requestRepository.save(request);
@@ -240,5 +232,11 @@ public class RequestServiceImpl implements RequestService {
                 .map(this::getRequestById)
                 .map(this::convertRequest)
                 .toList();
+    }
+    
+    @Override
+    public String writeRequestVersionToExcel(UUID requestId, String outputDirectory) throws IOException {
+        RequestVersion requestVersion = getRequestById(requestId).getVersions().getLast();
+        return excelService.writeRequestVersionToExcel(outputDirectory, requestVersion);
     }
 }

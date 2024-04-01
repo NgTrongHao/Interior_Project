@@ -12,4 +12,7 @@ public class ProductDetailDto {
     private String productName;
     private Integer quantity;
     private String description;
+    private Double length;
+    private Double width;
+    private Double height;
 }

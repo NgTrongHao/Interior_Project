@@ -1,12 +1,12 @@
 package swp.group5.swp_interior_project.service.interfaces;
 
-import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
 import swp.group5.swp_interior_project.model.dto.request.RequestDto;
 import swp.group5.swp_interior_project.model.dto.request.RequestVersionDto;
 import swp.group5.swp_interior_project.model.entity.Request;
 import swp.group5.swp_interior_project.model.enums.RequestStatus;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,4 +32,6 @@ public interface RequestService {
     List<RequestVersionDto> getRequestHistoryList(UUID requestId);
     
     List<RequestDto> getRequestListByUser(String username);
+    
+    String writeRequestVersionToExcel(UUID requestId, String outputDirectory) throws IOException;
 }

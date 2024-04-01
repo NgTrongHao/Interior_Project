@@ -48,11 +48,7 @@ public class RequestDetailServiceImpl implements RequestDetailService {
         List<RequestDetailProduct> requestDetailProducts = new ArrayList<>();
         for (ProductDetailDto productDetailDto : requestDetailDto.getProducts()) {
             Product product = productService.getProductById(productDetailDto.getProductId());
-            RequestDetailProduct requestDetailProduct = new RequestDetailProduct();
-            requestDetailProduct.setRequestDetail(requestDetail);
-            requestDetailProduct.setProduct(product);
-            requestDetailProduct.setQuantity(productDetailDto.getQuantity());
-            requestDetailProduct.setDescription(productDetailDto.getDescription());
+            RequestDetailProduct requestDetailProduct = getRequestDetailProduct(productDetailDto, requestDetail, product);
             // Lưu vào cơ sở dữ liệu
             requestDetailProductRepository.save(requestDetailProduct);
             requestDetailProducts.add(requestDetailProduct);
@@ -60,6 +56,18 @@ public class RequestDetailServiceImpl implements RequestDetailService {
         requestDetail.setRequestDetailProducts(requestDetailProducts);
         requestDetail.setWorkspace(workspaceService.getWorkspaceByName(requestDetailDto.getWorkspaceName()));
         return requestDetailRepository.save(requestDetail);
+    }
+    
+    private static RequestDetailProduct getRequestDetailProduct(ProductDetailDto productDetailDto, RequestDetail requestDetail, Product product) {
+        RequestDetailProduct requestDetailProduct = new RequestDetailProduct();
+        requestDetailProduct.setRequestDetail(requestDetail);
+        requestDetailProduct.setProduct(product);
+        requestDetailProduct.setQuantity(productDetailDto.getQuantity());
+        requestDetailProduct.setLength(productDetailDto.getLength());
+        requestDetailProduct.setWidth(productDetailDto.getWidth());
+        requestDetailProduct.setHeight(productDetailDto.getHeight());
+        requestDetailProduct.setDescription(productDetailDto.getDescription());
+        return requestDetailProduct;
     }
     
     @Override
@@ -85,6 +93,9 @@ public class RequestDetailServiceImpl implements RequestDetailService {
             productDetailDto.setProductId(requestDetailProduct.getProduct().getId());
             productDetailDto.setProductName(requestDetailProduct.getProduct().getName());
             productDetailDto.setQuantity(requestDetailProduct.getQuantity());
+            productDetailDto.setLength(requestDetailProduct.getLength());
+            productDetailDto.setWidth(requestDetailProduct.getWidth());
+            productDetailDto.setHeight(requestDetailProduct.getHeight());
             productDetailDto.setDescription(requestDetailProduct.getDescription());
             productDetailDtoList.add(productDetailDto);
         }
@@ -190,6 +201,9 @@ public class RequestDetailServiceImpl implements RequestDetailService {
             if (existingProduct != null) {
                 // Update information for existing RequestDetailProduct
                 existingProduct.setQuantity(productDto.getQuantity());
+                existingProduct.setLength(productDto.getLength());
+                existingProduct.setWidth(productDto.getWidth());
+                existingProduct.setHeight(productDto.getHeight());
                 existingProduct.setDescription(productDto.getDescription());
                 updatedProducts.add(existingProduct);
             } else {
@@ -199,6 +213,9 @@ public class RequestDetailServiceImpl implements RequestDetailService {
                 RequestDetailProduct newProduct = new RequestDetailProduct();
                 newProduct.setProduct(product);
                 newProduct.setQuantity(productDto.getQuantity());
+                newProduct.setLength(productDto.getLength());
+                newProduct.setWidth(productDto.getWidth());
+                newProduct.setHeight(productDto.getHeight());
                 newProduct.setDescription(productDto.getDescription());
                 newProduct.setRequestDetail(requestDetail);
                 updatedProducts.add(requestDetailProductRepository.save(newProduct));

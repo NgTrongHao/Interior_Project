@@ -20,4 +20,6 @@ public interface WorkspaceService {
     void addWorkspace(WorkspaceDto workspaceDto);
     
     List<ProductDto> getAllProductsByWorkspaceName(String workspaceName);
+    
+    void deleteWorkspace(String workspaceName);
 }

@@ -3,6 +3,7 @@ package swp.group5.swp_interior_project.controller;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import swp.group5.swp_interior_project.model.dto.ProductDto;
 import swp.group5.swp_interior_project.service.interfaces.ProductService;
@@ -27,6 +28,7 @@ public class ProductController {
      * Expected Output: Confirmation message of successful deletion.
      */
     @DeleteMapping("/delete/{productId}")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
         productService.deleteProduct(productId);
         return ResponseEntity.ok("Delete successfully");
@@ -43,6 +45,7 @@ public class ProductController {
      * Expected Output: Updated details of the product (ProductDto).
      */
     @PutMapping("/update/{productId}")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     public ResponseEntity<ProductDto> updateProduct(
             @PathVariable Long productId,
             @Valid @RequestBody ProductDto productDto
