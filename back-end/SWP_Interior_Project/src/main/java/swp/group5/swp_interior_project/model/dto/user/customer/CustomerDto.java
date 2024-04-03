@@ -26,6 +26,9 @@ public class CustomerDto {
     @Pattern(regexp = "\\d{10}", message = "Phone number must have 10 digits")
     private String phone;
     
+    @Size(min = 6, message = "Password must be at least 6 characters")
+    private String password;
+    
     @Pattern(regexp = "\\d{9,12}", message = "ID card number must have 9-12 digits")
     private String id_card;
     
