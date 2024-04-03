@@ -57,6 +57,7 @@ public class ProposalServiceImpl implements ProposalService {
         proposalDto.setId(proposal.getId());
         proposalDto.setDescription(proposal.getDescription());
         proposalDto.setFileName(proposal.getFileName());
+        proposalDto.setPrice(proposal.getPrice());
         proposalDto.setEmployeeStatus(proposal.getEmployeeStatus());
         proposalDto.setCustomerStatus(proposal.getCustomerStatus());
         proposalDto.setFilePath(proposal.getFilePath());

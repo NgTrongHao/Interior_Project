@@ -18,6 +18,7 @@ import swp.group5.swp_interior_project.repository.UserInfoRepository;
 import swp.group5.swp_interior_project.service.interfaces.MailSenderService;
 import swp.group5.swp_interior_project.service.interfaces.UserInfoService;
 import swp.group5.swp_interior_project.service.security.UserInfoDetails;
+import swp.group5.swp_interior_project.utils.RandomStringUtil;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,10 +48,14 @@ public class UserInfoServiceImpl implements UserInfoService {
             throw new DuplicateEntityException("Customer with the same email or phone already exists");
         }
         UserInfo user = convertCustomer(customerDto);
+        String password = RandomStringUtil.randomAlphaNumeric(6);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRoles(Set.of(AccountRole.ROLE_CUSTOMER));
+        user.setStatus(true);
         userInfoRepository.save(user);
         
         // Consider sending a welcome email or notification here
-        mailSenderService.sendMail(customerDto.getEmail(), "Welcome to FurnitureDesign", welcomeCustomerMessage(customerDto.getFullName(), customerDto.getEmail(), customerDto.getPhone()));
+        mailSenderService.sendMail(customerDto.getEmail(), "Welcome to FurnitureDesign", welcomeCustomerMessage(customerDto.getFullName(), customerDto.getEmail(), password));
     }
     
     @Override
@@ -58,7 +63,13 @@ public class UserInfoServiceImpl implements UserInfoService {
         if (userInfoRepository.existsByEmailOrPhoneOrUsername(employeeDto.getEmail(), employeeDto.getPhone(), employeeDto.getUsername())) {
             throw new DuplicateEntityException("Employee with the same email or phone or username already exists");
         }
-        userInfoRepository.save(convertEmployee(employeeDto));
+        UserInfo userInfo = convertEmployee(employeeDto);
+        if (employeeDto.getPassword() == null) {
+            userInfo.setPassword(passwordEncoder.encode("123456"));
+        } else {
+            userInfo.setPassword(passwordEncoder.encode(employeeDto.getPassword()));
+        }
+        userInfoRepository.save(userInfo);
     }
     
     @Override
@@ -88,72 +99,6 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
     
     @Override
-    public UserInfo convertCustomer(CustomerDto customerDto) {
-        UserInfo userInfo = new UserInfo();
-        userInfo.setFullName(customerDto.getFullName());
-        userInfo.setEmail(customerDto.getEmail());
-        userInfo.setPhone(customerDto.getPhone());
-        userInfo.setIdCard(customerDto.getId_card());
-        userInfo.setNote(customerDto.getNote());
-        userInfo.setAddress(null);
-        userInfo.setUsername(customerDto.getEmail());
-        userInfo.setPassword(passwordEncoder.encode(customerDto.getPhone()));
-        userInfo.setStatus(true);
-        userInfo.setRoles(Set.of(AccountRole.ROLE_CUSTOMER));
-        
-        return userInfo;
-    }
-    
-    @Override
-    public CustomerDto convertCustomer(UserInfo userInfo) {
-        CustomerDto customerDto = new CustomerDto();
-        customerDto.setEmail(userInfo.getEmail());
-        customerDto.setId(userInfo.getId());
-        customerDto.setPhone(userInfo.getPhone());
-        customerDto.setFullName(userInfo.getFullName());
-        customerDto.setNote(userInfo.getNote());
-        customerDto.setId_card(userInfo.getIdCard());
-        customerDto.setAddress(userInfo.getAddress());
-        return customerDto;
-    }
-    
-    public UserInfo convertEmployee(EmployeeDto employeeDto) {
-        UserInfo userInfo = new UserInfo();
-        userInfo.setFullName(employeeDto.getFullName());
-        userInfo.setEmail(employeeDto.getEmail());
-        userInfo.setPhone(employeeDto.getPhone());
-        userInfo.setIdCard(employeeDto.getId_card());
-        userInfo.setNote(null);
-        userInfo.setAddress(employeeDto.getAddress());
-        userInfo.setUsername(employeeDto.getUsername());
-        if (employeeDto.getPassword() == null) {
-            userInfo.setPassword(passwordEncoder.encode("123456"));
-        } else {
-            userInfo.setPassword(passwordEncoder.encode(employeeDto.getPassword()));
-        }
-        userInfo.setStatus(employeeDto.isStatus());
-        userInfo.setRoles(employeeDto.getRoles().stream()
-                .map(AccountRole::valueOf).collect(Collectors.toSet())
-        );
-        return userInfo;
-    }
-    
-    public EmployeeDto convertEmployee(UserInfo userInfo) {
-        EmployeeDto employeeDto = new EmployeeDto();
-        employeeDto.setId(userInfo.getId());
-        employeeDto.setFullName(userInfo.getFullName());
-        employeeDto.setEmail(userInfo.getEmail());
-        employeeDto.setPhone(userInfo.getPhone());
-        employeeDto.setId_card(userInfo.getIdCard());
-        employeeDto.setAddress(userInfo.getAddress());
-        employeeDto.setStatus(userInfo.isStatus());
-        employeeDto.setUsername(userInfo.getUsername());
-        employeeDto.setPassword(userInfo.getPassword());
-        employeeDto.setRoles(userInfo.getRoles().stream().map(Enum::toString).collect(Collectors.toSet()));
-        return employeeDto;
-    }
-    
-    @Override
     public List<Object[]> findStaffAndTotalPriceByRoleAndStatus(AccountRole role, RequestStatus status) {
         return userInfoRepository.findStaffAndTotalPriceByRoleAndStatus(role, status);
     }
@@ -177,6 +122,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         
         UserInfo updatedUserInfo = convertEmployee(updatedEmployee);
         updatedUserInfo.setId(existingEmployee.getId());
+        updatedUserInfo.setPassword(passwordEncoder.encode(updatedEmployee.getPassword()));
         
         userInfoRepository.save(updatedUserInfo);
     }
@@ -190,11 +136,6 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
     
     @Override
-    public CustomerDto getCustomerInfoProfileByUsername(String username) {
-        return convertCustomer(userInfoRepository.findByUsername(username).orElseThrow(() -> new NotFoundEntityException("Customer not found!")));
-    }
-    
-    @Override
     public void updateCustomer(String username, CustomerDto customerDto) {
         UserInfo existingCustomer = userInfoRepository.findByUsername(username).orElseThrow(() -> new NotFoundEntityException("Customer not found!"));
         UserInfo updateCustomer = convertCustomer(customerDto);
@@ -202,7 +143,66 @@ public class UserInfoServiceImpl implements UserInfoService {
         userInfoRepository.save(updateCustomer);
     }
     
-    private String welcomeCustomerMessage(String fullName, String email, String phone) {
+    @Override
+    public UserInfo convertCustomer(CustomerDto customerDto) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setFullName(customerDto.getFullName());
+        userInfo.setEmail(customerDto.getEmail());
+        userInfo.setPhone(customerDto.getPhone());
+        userInfo.setIdCard(customerDto.getId_card());
+        userInfo.setNote(customerDto.getNote());
+        userInfo.setAddress(customerDto.getAddress());
+        userInfo.setUsername(customerDto.getEmail());
+        
+        return userInfo;
+    }
+    
+    @Override
+    public CustomerDto convertCustomer(UserInfo userInfo) {
+        CustomerDto customerDto = new CustomerDto();
+        customerDto.setId(userInfo.getId());
+        customerDto.setEmail(userInfo.getEmail());
+        customerDto.setPhone(userInfo.getPhone());
+        customerDto.setPassword(userInfo.getPassword());
+        customerDto.setFullName(userInfo.getFullName());
+        customerDto.setNote(userInfo.getNote());
+        customerDto.setId_card(userInfo.getIdCard());
+        customerDto.setAddress(userInfo.getAddress());
+        return customerDto;
+    }
+    
+    public UserInfo convertEmployee(EmployeeDto employeeDto) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setFullName(employeeDto.getFullName());
+        userInfo.setEmail(employeeDto.getEmail());
+        userInfo.setPhone(employeeDto.getPhone());
+        userInfo.setIdCard(employeeDto.getId_card());
+        userInfo.setNote(null);
+        userInfo.setAddress(employeeDto.getAddress());
+        userInfo.setUsername(employeeDto.getUsername());
+        userInfo.setStatus(employeeDto.isStatus());
+        userInfo.setRoles(employeeDto.getRoles().stream()
+                .map(AccountRole::valueOf).collect(Collectors.toSet())
+        );
+        return userInfo;
+    }
+    
+    public EmployeeDto convertEmployee(UserInfo userInfo) {
+        EmployeeDto employeeDto = new EmployeeDto();
+        employeeDto.setId(userInfo.getId());
+        employeeDto.setFullName(userInfo.getFullName());
+        employeeDto.setEmail(userInfo.getEmail());
+        employeeDto.setPhone(userInfo.getPhone());
+        employeeDto.setId_card(userInfo.getIdCard());
+        employeeDto.setAddress(userInfo.getAddress());
+        employeeDto.setStatus(userInfo.isStatus());
+        employeeDto.setUsername(userInfo.getUsername());
+        employeeDto.setPassword(userInfo.getPassword());
+        employeeDto.setRoles(userInfo.getRoles().stream().map(Enum::toString).collect(Collectors.toSet()));
+        return employeeDto;
+    }
+    
+    private String welcomeCustomerMessage(String fullName, String email, String password) {
         return "<!DOCTYPE html>"
                 + "<html lang=\"en\">"
                 + "<head>"
@@ -223,7 +223,7 @@ public class UserInfoServiceImpl implements UserInfoService {
                 + "    <p>We're thrilled to have you with us. Your journey to exquisite interiors starts here. Below are your login details:</p>"
                 + "    <ul>"
                 + "        <li><strong>Username:</strong> " + email + "</li>"
-                + "        <li><strong>Password:</strong> " + phone + "</li>"
+                + "        <li><strong>Password:</strong> " + password + "</li>"
                 + "    </ul>"
                 + "    <p>Please use these credentials to log in and start your project:</p>"
                 + "    <a href=\"http://localhost:5173/login\" class=\"button\">Login to Your Account</a>"
