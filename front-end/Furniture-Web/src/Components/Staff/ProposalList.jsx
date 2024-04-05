@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
-import { Link } from 'react-router-dom';
 import './ProposalList.css';
 // import React, { useEffect, useState } from 'react';
 // import Cookies from 'js-cookie';
-// import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 // import './ProposalList.css';
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
@@ -22,6 +21,7 @@ export default function ProposalList() {
 
   useEffect(() => {
     fetchRequestDetails();
+    console.log(rows);
   }, []);
 
   const fetchRequestDetails = async () => {
@@ -48,15 +48,14 @@ export default function ProposalList() {
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
+        <TableHead style={{backgroundColor: "#B0C4DE"}}>
           <TableRow>
             <TableCell>ID</TableCell>
-            <TableCell align="right">Estimated Price</TableCell>
-            <TableCell align="right">Customer Name</TableCell>
-            <TableCell align="right">Request Status</TableCell>
-            <TableCell align="right">View Details</TableCell>
-            <TableCell align="right">Upload PDF </TableCell>
-
+            <TableCell align="right">Giá dự thảo</TableCell>
+            <TableCell align="right">Tên khách hàng</TableCell>
+            <TableCell align="right">Trạng thái báo giá</TableCell>
+            <TableCell align="right">Xem chi tiết</TableCell>
+            <TableCell align="right">Tải lên file báo giá </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -68,27 +67,27 @@ export default function ProposalList() {
               <TableCell component="th" scope="row">
                 {row.id}
               </TableCell>
-              <TableCell align="right">{row.price}</TableCell>
+              <TableCell align="right">{row.price} VND</TableCell>
               <TableCell align="right">{row.customer?.full_name}</TableCell>
-              <TableCell align="right">{row.customerRequestStatus}</TableCell>
-              
+              <TableCell align="right">{row.employeeRequestStatusDescription}</TableCell>
+
               <TableCell align="right">
                 <button>
-                  <Link to={`/staff/proposalDetails/${row.id}`}>View</Link>
-              </button>
+                  <Link to={`/staff/proposalDetails/${row.id}`}>Xem</Link>
+                </button>
               </TableCell>
               <TableCell align="right">
                 <button>
-                  <Link to={`/staff/proposalPdf/${row.id}`}>Upload Proposal</Link>
-              </button>
+                  <Link to={`/staff/proposalPdf/${row.id}`}>Cập nhật</Link>
+                </button>
               </TableCell>
-              
+
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      <Button component={Link} to="/staff">Back to StaffPage</Button> 
+
     </TableContainer>
- 
+
   )
 }

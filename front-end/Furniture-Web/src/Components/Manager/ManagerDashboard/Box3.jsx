@@ -40,7 +40,7 @@ function Box3() {
 
     return (
         <div className="bg-blue-200 h-1/2 w-full rounded-2xl p-4 flex flex-col justify-center items-center">
-            <h2 className="text-4xl font-bold mb-4">Customer Waiting Time</h2>
+            <h2 className="text-4xl font-bold mb-4">Thời gian khách hàng chờ được xác nhận yêu cầu </h2>
             <div className="flex justify-between w-full">
                 <div className="flex flex-col justify-center items-center">
                     {chartData.length > 0 && (

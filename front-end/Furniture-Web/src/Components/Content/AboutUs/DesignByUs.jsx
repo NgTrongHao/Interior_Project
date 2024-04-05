@@ -36,12 +36,12 @@ function DesignByUs() {
                     <img className="body-pictures" src={bedroom} alt="" />
                     <div className="description">
                         <a href="#" className="description-title">
-                            Bedroom
+                            Phòng ngủ
                         </a>
                         <div className="description-details">
-                            Rest, Sleep, Relaxation, Comfort, Serenity, Privacy.
+                            Không gian thư giản và nghỉ nơi sang trọng, đẳng cấp
                         </div>
-                        <a href="/Details/BedroomDetails.html" className="description-detail-more">See more</a>
+                        <a href="/Details/BedroomDetails.html" className="description-detail-more">Xem thêm</a>
                     </div>
                 </div>
                 {/* End Bed Room */}
@@ -51,12 +51,12 @@ function DesignByUs() {
                     <img className="body-pictures" src={restroom} alt="" />
                     <div className="description">
                         <a href="#" className="description-title">
-                            Rest Room
+                            Phòng giải trí, thư giản
                         </a>
                         <div className="description-details">
-                            Refresh, Revitalize, Tranquility, Renewal, Privacy, Cleanliness.
+                            Không gian thư giản giải trí sau những giờ làm việc
                         </div>
-                        <a href="/Details/RestRoomDetails.html" className="description-detail-more">See more</a>
+                        <a href="/Details/RestRoomDetails.html" className="description-detail-more">Xem thêm</a>
                     </div>
                 </div>
                 {/* End Rest Room */}
@@ -66,12 +66,12 @@ function DesignByUs() {
                     <img className="body-pictures" src={livingroom} alt="" />
                     <div className="description">
                         <a href="#" className="description-title">
-                            Living Room
+                            Phòng khách
                         </a>
                         <div className="description-details">
-                            Gather, Socialize, Entertainment, Comfort, Conversation, Relaxation.
+                            Không gian sang trọng, lịch sự đón những vị khách quý
                         </div>
-                        <a href="/Details/LivingRoomDetails.html" className="description-detail-more">See more</a>
+                        <a href="/Details/LivingRoomDetails.html" className="description-detail-more">Xem thêm</a>
                     </div>
                 </div>
                 {/* End Living Room */}
@@ -81,12 +81,12 @@ function DesignByUs() {
                     <img className="body-pictures" src={diningroom} alt="" />
                     <div className="description">
                         <a href="#" className="description-title">
-                            Dining Room
+                            Phòng bếp
                         </a>
                         <div className="description-details">
-                            Share, Meals, Family, Gatherings, Comfort, Hospitality.
+                            Không gian ấm cúng nơi gia đình tụ họp thưởng thức những món ngon tuyệt vời
                         </div>
-                        <a href="/Details/DiningRoomDetails.htm" className="description-detail-more">See more</a>
+                        <a href="/Details/DiningRoomDetails.htm" className="description-detail-more">Xem thêm</a>
                     </div>
                 </div>
                 {/* End Dining Room */}
@@ -96,12 +96,12 @@ function DesignByUs() {
                     <img className="body-pictures" src={familyroom} alt="" />
                     <div className="description">
                         <a href="#" className="description-title">
-                            Family Room
+                            Phòng gia đình
                         </a>
                         <div className="description-details">
-                            Bonding, Cozy, Informal, Relaxation, Entertainment, Comfort.
+                            Nơi tụ họp của đại gia đình, gắn kết yêu thương
                         </div>
-                        <a href="/Details/FamilyRoomDetails.html" className="description-detail-more">See more</a>
+                        <a href="/Details/FamilyRoomDetails.html" className="description-detail-more">Xem thêm</a>
                     </div>
                 </div>
                 {/* End Family Room */}
@@ -111,12 +111,12 @@ function DesignByUs() {
                     <img className="body-pictures" src={workroom} alt="" />
                     <div className="description">
                         <a href="#" className="description-title">
-                            Work Room
+                            Phòng làm việc
                         </a>
                         <div className="description-details">
-                            Productivity, Focus, Creativity, Efficiency, Organization, Comfort.
+                            Không gian tập trung, tiện nghi mang đến môi trường làm việc hiệu quả
                         </div>
-                        <a href="/Details/WorkRoomDetails.html" className="description-detail-more">See more</a>
+                        <a href="/Details/WorkRoomDetails.html" className="description-detail-more">Xem thêm</a>
                     </div>
                 </div>
                 {/* End Workroom */}

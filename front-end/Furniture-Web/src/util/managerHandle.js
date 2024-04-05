@@ -1,8 +1,8 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
+//  get product details
 export async function getProductDetail(productID) {
-
     try {
         const response = await axios.get(`http://localhost:8080/api/v1/product/${productID}`, {
             headers: {
@@ -61,25 +61,33 @@ export function getRequestById(requestId) {
 
 }
 
+// Confirm proposal
 export async function confirmProposal(proposalID) {
     try {
-        const response = await axios.patch(`http://localhost:8080/api/v1/request/auth/confirmProposal/${proposalID}`, {}, {
-            headers: {
-                'Authorization': 'Bearer ' + Cookies.get('token'),
-                'Content-Type': 'application/json'
-            }
-        });
-        return response.data;
+        const response = await axios.patch(`http://localhost:8080/api/v1/request/auth/confirmProposal/${proposalID}`,
+            null,
+            {
+                headers: {
+                    'Authorization': 'Bearer ' + Cookies.get('token'),
+                    'Content-Type': 'application/json'
+                }
+            });
+        if (response.status == 200) {
+            alert('Đã chấp thuận hợp đồng');
+            window.location.reload();
+        }
     } catch (error) {
         console.log(error);
         throw error; // Rethrow error to handle it in the caller
     }
 }
 
-export function unlockRequest(requestId) {
+
+// Unlock request
+export async function unlockRequest(requestId) {
 
     try {
-        axios.delete(`http://localhost:8080/api/v1/request/auth/${requestId}/lock`, {
+        await axios.delete(`http://localhost:8080/api/v1/request/auth/${requestId}/lock`, {
             headers: {
                 'Authorization': 'Bearer' + Cookies.get('token'),
                 'Content-Type': 'application/json'
@@ -88,19 +96,28 @@ export function unlockRequest(requestId) {
     } catch (error) {
         console.log(error);
     }
-
 }
 
-export function rejectProposal(proposalId) {
+// Reject proposals
+export async function rejectProposal(proposalId) {
     try {
-        // /api/v1/request/auth/rejectProposal/{proposalId}
-        axios.patch(`http://localhost:8080/api/v1/request/auth/rejectProposal/${proposalId}`, {
-            headers: {
-                'Authorization': 'Bearer ' + Cookies.get('token'),
-                'Content-Type': 'application/json'
+        const response = await axios.patch(
+            `http://localhost:8080/api/v1/request/auth/rejectProposal/${proposalId}`,
+            null, // Không có body yêu cầu nên truyền null
+            {
+                headers: {
+                    'Authorization': 'Bearer ' + Cookies.get('token'),
+                    'Content-Type': 'application/json'
+                }
             }
-        })
+        );
+
+        if (response.status == 200) {
+            alert('Đã từ chối hợp đồng');
+            window.location.reload();
+        }
     } catch (error) {
-        console.log(error);
+        console.error('Error rejecting proposal:', error);
+        throw error; // Ném lại lỗi để xử lý tại component gọi hàm này nếu cần
     }
 }

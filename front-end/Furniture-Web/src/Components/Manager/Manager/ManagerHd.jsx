@@ -6,11 +6,10 @@ import ManagerProjectHD from './ManagerProjectHD';
 function ManagerHd() {
     return (
         <div className='flex'>
-            <div className=''>
+            
                 <Sidebar />
-            </div>
-
-            <ManagerProjectHD />
+            
+            {/* <ManagerProjectHD /> */}
         </div>
     )
 }

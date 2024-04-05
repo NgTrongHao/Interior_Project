@@ -18,11 +18,10 @@ function Blog() {
                     <div className="row">
                         <div className="overlay" id="overlay"></div>
                         <div className="newProject-box">
-                            <h2 className="project-title">Interior Design</h2>
-                            <p className="project-description">Step into a world where the art of Interior Design is meticulously crafted to bring together timeless elegance and cutting-edge
-                                modern Innovation, Allowing you to transform your living spaces into the epitome of luxury and sophistication</p>
-                            <button className="create-project">Start Project</button>
-                            <a href="/WebPage/AboutUsPage/AboutUsPage.html" className="See-more-details">See more details</a>
+                            <h2 className="project-title">Thi công nội thất</h2>
+                            <p className="project-description">Bước vào một thế giới nơi nghệ thuật Thiết kế Nội thất được tạo ra một cách tỉ mỉ để kết hợp giữa sự thanh lịch vượt thời gian và sự đổi mới hiện đại cắt cạnh, cho phép bạn biến không gian sống của mình trở thành biểu tượng của sự xa hoa và tinh tế.</p>
+                            <button className="create-project">Tạo dự án</button>
+                            <a href="/WebPage/AboutUsPage/AboutUsPage.html" className="See-more-details">Xem thêm thông tin</a>
                         </div>
                         <div className="pro-img" >
                             <img className="img-tag" src={a1} alt="" />
@@ -39,16 +38,16 @@ function Blog() {
                     </div>
                 </div>
                 <div className="container">
-                    <h1 className="title">Top quatation about living room</h1>
+                    <h1 className="title">Top những phong cách thi công phòng khách</h1>
                     <div className="content">
                         <div className="box" >
                             <img className="project-img" src={a1} alt="" />
                             <div className="project-title">
-                                Top 10 Modern Luxury Living Room
+                                Top 10 Phòng khách hiện đại
                             </div>
                             <div className="project-info">
                                 <p>
-                                    In today's world, lifestyles are evolving more than ever, with increasing numbers of families opting for modern ways of living.
+                                Trong thế giới ngày nay, lối sống đang phát triển hơn bao giờ hết, với số lượng gia đình chọn lựa cách sống hiện đại đang tăng lên
                                 </p>
                             </div>
                             <div className="project-price">
@@ -340,11 +339,10 @@ function Blog() {
 
                 <div className="quote-form">
                     <div className="quote-content">
-                        <h1>CONTACT FOR CONSULTATION</h1>
+                        <h1>LIÊN HỆ ĐỂ ĐƯỢC TƯ VẤN</h1>
                         <p>
 
-                            For detailed and accurate consultation on services at Furniture Vietnam, please fill in the information in the form provided on the side.
-                            Upon receiving your registration information, the support team at Furniture Vietnam will contact you directly within 24 hours to provide assistance, consultation, and specific pricing.
+                        Để được tư vấn chi tiết và chính xác về các dịch vụ tại Furniture Vietnam, vui lòng điền thông tin vào biểu mẫu được cung cấp bên cạnh. Sau khi nhận được thông tin đăng ký của bạn, đội ngũ hỗ trợ tại Furniture Vietnam sẽ liên hệ trực tiếp với bạn trong vòng 24 giờ để cung cấp sự hỗ trợ, tư vấn và báo giá cụ thể.
 
                         </p>
                     </div>

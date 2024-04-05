@@ -3,10 +3,11 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-function Register({ onLogin, handleLogin }) {
+function Register({ handleLogin, toggleLogin }) {
 
     const navigate = useNavigate();
 
+    // Lưu trạng tháii
     const [enteredValue, setEnteredValue] = useState({
         email: '',
         phone: '',
@@ -28,7 +29,7 @@ function Register({ onLogin, handleLogin }) {
         })
             .then(response => {
                 console.log(response.data); // In ra dữ liệu từ backend
-                onLogin(enteredValue);
+                handleLogin(enteredValue);
                 // Xử lý logic khi đăng ký thành công
                 navigate('/login');
                 setEnteredValue({
@@ -53,9 +54,9 @@ function Register({ onLogin, handleLogin }) {
 
     return (
         <div className="login-card">
-            <button className="close" id='close' onClick={onLogin}>close</button>
+            <button className="close" id='close' onClick={toggleLogin}>close</button>
             <form className="login-form" action="" onSubmit={handleSubmit}>
-                <label htmlFor="username">Username</label>
+                <label htmlFor="username">Tên đăng nhập</label>
                 <input
                     type="email"
                     id="username"
@@ -64,7 +65,7 @@ function Register({ onLogin, handleLogin }) {
                     onChange={(event) => handleInputChange('email', event.target.value)}
                 />
 
-                <label htmlFor="telephone">Telephone contact</label>
+                <label htmlFor="telephone">Số điện thoại</label>
                 <input
                     type="text"
                     id="telephone"
@@ -73,7 +74,7 @@ function Register({ onLogin, handleLogin }) {
                     onChange={(event) => handleInputChange('phone', event.target.value)}
                 />
 
-                <label htmlFor="fullName">Full Name</label>
+                <label htmlFor="fullName">Họ và tên</label>
                 <input
                     type="text"
                     id="fullName"
@@ -82,7 +83,7 @@ function Register({ onLogin, handleLogin }) {
                     onChange={(event) => handleInputChange('full_name', event.target.value)}
                 />
 
-                <button className="regis-button" id="registerButton">Register For Quote</button>
+                <button className="regis-button" id="registerButton">Đăng kí nhận báo giá</button>
             </form>
         </div>
     )

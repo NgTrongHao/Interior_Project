@@ -14,23 +14,30 @@ function AboutUsPage() {
 
                     <div className="fullscreen-background">
                         <img className="body-img" src={a1} alt="" />
-                        <h1>WELCOME TO FURNITURE</h1>
+                        <h1>FURNITURE XIN CHÀO</h1>
                     </div>
                     <div className="grid__row">
                         <div className="about-title">
-                            <h1>ABOUT - US</h1>
+                            <h1>Giới thiệu về chúng tôi</h1>
                         </div>
                         <div className="about-us">
 
                             <img className="about-us-img" src={a2} alt="" />
                             <div className="about-us-content">
                                 <p>
-                                    Here we are!
+                                    Furniture Xin chào!
                                 </p>
                                 <p>
-                                    where we explore and create beautiful and unique living spaces.
-                                    At Furniture, we are committed to providing high-quality furniture products and the most attentive services to meet all customer needs.
-                                    With a diverse collection of designs and styles, we hope to inspire you to create the perfect living and working spaces. Join Furniture on the journey to turn every idea into reality!
+                                Furniture là nơi chúng tôi khám phá và tạo ra những không gian sống đẹp và độc đáo.
+Tại Furniture, chúng tôi cam kết cung cấp các sản phẩm nội thất chất lượng cao và dịch vụ chu đáo nhất để đáp ứng mọi nhu cầu của khách hàng.
+Với một bộ sưu tập đa dạng về thiết kế và phong cách, chúng tôi hy vọng sẽ truyền cảm hứng cho bạn để tạo ra những không gian sống và làm việc hoàn hảo. Hãy tham gia cùng Furniture trên hành trình biến mọi ý tưởng thành hiện thực!
+
+
+
+
+
+
+
                                 </p>
                             </div>
                         </div>
@@ -40,7 +47,7 @@ function AboutUsPage() {
                         <div className="body-carousel-box">
                             <div className="hero-carousel">
                                 <div className="body-title">
-                                    <h1>Work Spaces designed by Us</h1>
+                                    <h1>Không gian nội thất</h1>
                                 </div>
                                 {/* Design By Us Page */}
                                 <DesignByUs />

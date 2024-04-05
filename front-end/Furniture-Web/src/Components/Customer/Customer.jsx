@@ -13,7 +13,7 @@ function Customer() {
         <div className="flex">
             <Sidebar />
             <Routes>
-                <Route path="" element={<MainContent />} />
+                {/* <Route path="" element={<MainContent />} /> */}
                 <Route path="manager/*" element={<Manager />}>
                     <Route path="project" element={<Project />} />
                     <Route path="quotation" element={<Quotation />} />
