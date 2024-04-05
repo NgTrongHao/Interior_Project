@@ -10,7 +10,6 @@ import Paper from '@mui/material/Paper';
 import { getRequestOfCustomer, unlockRequest } from '../../../util/managerHandle';
 import RequestDetail from './RequestDetail';
 
-
 function ManagerProjectHD() {
 
     const [projects, setProjects] = useState([]);
@@ -21,9 +20,9 @@ function ManagerProjectHD() {
         const fetchData = async () => {
             try {
                 //PROPOSAL_AWAITING_APPROVAL
-                const response = await getRequestOfCustomer(currentPage, 4, 'PROPOSAL_AWAITING_APPROVAL');
+                const response = await getRequestOfCustomer(currentPage, 6, 'PROPOSAL_AWAITING_APPROVAL');
                 setProjects(response); // Lưu kết quả từ API vào state
-                console.log(response);
+                // console.log(response);
             } catch (error) {
                 console.log(error);
             }
@@ -36,7 +35,7 @@ function ManagerProjectHD() {
         setCurrentPage(page); // Cập nhật state currentPage khi chuyển trang
     };
 
-    console.log("Projectssss", projects);
+    console.log("Project", projects);
 
     const handleRowClick = (project) => {
         setSelectedProjects(project);
@@ -53,15 +52,16 @@ function ManagerProjectHD() {
     };
 
     return (
-        <div className='flex flex-col w-5/6'>
+        <div className='flex w-full flex-col h-full justify-between items-center overflow-auto'>
+            {/* Manager View */}
             <TableContainer component={Paper}>
                 <Table aria-label="collapsible table">
-                    <TableHead>
+                    <TableHead style={{backgroundColor: "#B0C4DE"}}>
                         <TableRow>
-                            <TableCell style={{ fontSize: '16px', fontWeight: 'bold', color: '#000080' }}>Project ID</TableCell>
-                            <TableCell style={{ fontSize: '16px', fontWeight: 'bold', color: '#000080' }}>Status</TableCell>
-                            <TableCell style={{ fontSize: '16px', fontWeight: 'bold', color: '#000080' }}>Price</TableCell>
-                            <TableCell style={{ fontSize: '16px', fontWeight: 'bold', color: '#000080' }}>Detail</TableCell>
+                            <TableCell style={{ fontSize: '16px', fontWeight: 'bold', color: '#000080' }}>Mã dự án</TableCell>
+                            <TableCell style={{ fontSize: '16px', fontWeight: 'bold', color: '#000080' }}>Trạng thái</TableCell>
+                            <TableCell style={{ fontSize: '16px', fontWeight: 'bold', color: '#000080' }}>Giá sơ bộ</TableCell>
+                            <TableCell style={{ fontSize: '16px', fontWeight: 'bold', color: '#000080' }}>Chi tiết</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -70,21 +70,24 @@ function ManagerProjectHD() {
                                 key={project.id}>
                                 <TableCell style={{ fontSize: '10px', fontWeight: '500' }}> {project.id}</TableCell>
                                 <TableCell style={{ fontSize: '10px', fontWeight: '500', color: '#B8860B' }}>
-                                    {project.employeeRequestStatus === 'PROPOSAL_AWAITING_APPROVAL' ? 'WAITING APPROVAL' : ''}
+                                    {project.employeeRequestStatusDescription}
                                 </TableCell>
-                                <TableCell style={{ fontSize: '10px', fontWeight: '500' }}>{project.price}</TableCell>
+                                <TableCell style={{ fontSize: '10px', fontWeight: '500' }}>{project.proposal && project.proposal.price ? project.proposal.price : ''} VND</TableCell>
                                 <TableCell style={{ fontSize: '10px', fontWeight: '600', cursor: 'pointer', color: '#483D8B', transition: 'color 0.3s' }}
                                     onMouseEnter={(e) => e.target.style.color = '#FF0000'} // Change color on hover
                                     onMouseLeave={(e) => e.target.style.color = '#483D8B'} // Revert color when not hovered
-                                    onClick={() => handleRowClick(project)}>View</TableCell>
+                                    onClick={() => handleRowClick(project)}>Xem</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
+            {/* End Manager View */}
             <Pagination count={10} onChange={handlePageChange} color='secondary' />
             {selectedProject && (
+
                 <RequestDetail project={selectedProject} close={() => handleClose(selectedProject.id)} />
+
             )}
         </div>
     );

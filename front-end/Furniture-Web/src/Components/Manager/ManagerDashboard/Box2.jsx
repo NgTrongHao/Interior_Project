@@ -75,7 +75,7 @@ function Box2() {
 
     return (
         <div className="flex flex-col justify-center items-center bg-green-200 h-1/2 w-full rounded-2xl p-4">
-            <h2 className="text-4xl font-bold mb-4">Monthly Revenue</h2>
+            <h2 className="text-4xl font-bold mb-4">Doanh số theo tháng</h2>
             <canvas className="w-full" ref={chartRef} />
         </div>
     );

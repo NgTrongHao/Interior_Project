@@ -1,9 +1,9 @@
 @import url('../../BaseCss/base.css');
-span{
+/* span{
     font-size: 2rem;
     font-weight: 600;
     color:var(--main-color);
-}
+} */
 
 *{
     font-size: 1.6rem;
@@ -17,7 +17,7 @@ span{
 .request-details li{
     font-size: 1.8rem;
 }
-input{
+/* input{
     padding: 20px !important;
     width: 100%;
     min-height: 20px;
@@ -27,7 +27,7 @@ input{
     border-color: var(--main-color);
     margin-left: 10px;
     font-size:2rem !important;
-}
+} */
 .CusInfo{
     display: flexbox;
     flex-direction: column;

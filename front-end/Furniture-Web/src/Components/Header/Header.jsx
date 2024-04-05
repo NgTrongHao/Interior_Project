@@ -3,8 +3,14 @@ import './Header.css';
 import { Link } from 'react-router-dom';
 import Register from '../../Register/Register';
 import Dropdown from './Dropdown';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 
-function Header() {
+
+function Header({ handleLogin }) {
+
+    const userInfo = JSON.parse(localStorage.getItem('customer'));
+    const navigate = useNavigate();
 
     const [isLoginOpen, setLoginOpen] = useState(false);
 
@@ -12,6 +18,35 @@ function Header() {
     const toggleLogin = () => {
         setLoginOpen(!isLoginOpen);
     };
+
+
+    const handleLogout = () => {
+        localStorage.removeItem('customer');
+        Cookies.remove('token');
+        navigate('/');
+        window.location.reload();
+    }
+
+    const renderButton = () => {
+        if (userInfo) {
+            // Nếu có thông tin userInfo, hiển thị nút Đăng xuất
+            return (
+                <button className='bg-[#054c73] text-2xl px-8 py-4 text-white rounded-full' onClick={handleLogout}>
+                    Đăng xuất
+                </button>
+            );
+        } else {
+            // Ngược lại, hiển thị nút Đăng nhập
+            return (
+                <Link to='login'>
+                    <button className='bg-[#054c73] text-2xl px-8 py-4 text-white rounded-full'>
+                        Đăng nhập
+                    </button>
+                </Link>
+            );
+        }
+    };
+
 
     return (
 
@@ -37,56 +72,41 @@ function Header() {
                         <ul>
                             {/* About Us */}
                             <li className="dropdown-container">
-                                <Link to='/about-us' className="header__navbar-navPage--button">About Us</Link>
+                                <Link to='/about-us' className="header__navbar-navPage--button text-4xl">Giới thiệu</Link>
                             </li>
                             {/* End About Us */}
 
                             {/* Services */}
                             <li className="dropdown-container">
-                                <a to="service" className="header__navbar-navPage--button">
-                                    Services
-                                    <span className="fa-solid fa-angle-down icon-down"></span>
+                                <a to="service" className="header__navbar-navPage--button text-4xl">
+                                    Dịch vụ
+                                    <span className="fa-solid fa-angle-down icon-down text-2xl"></span>
                                 </a>
-                                <Dropdown/>
+                                <Dropdown />
                             </li>
                             {/* End Services */}
 
                             {/* Blog */}
                             <li className="dropdown-container">
-                                <Link to={'/blog'} className="header__navbar-navPage--button">Blog</Link>
+                                <Link to={'/blog'} className="header__navbar-navPage--button text-4xl">Blogs nội thất</Link>
                             </li>
                             {/* End Blog */}
                         </ul>
                     </nav>
 
 
-                    {/* Search */}
-                    <div className="header__search">
-                        <div className="header__search-input-wrap">
-                            <input
-                                type="text"
-                                className="header__search-input"
-                                placeholder="Search..."
-                            />
-                            <button className="header__search-btn">
-                                <i className="fas fa-search header__search-btn-icon"></i>
-                            </button>
-                        </div>
-                    </div>
-                    {/* End Search */}
-
-
                     {/* Quote Button */}
                     <div className="header__quote">
-                        <button className="header__quote-button" id="quoteButton" onClick={toggleLogin}>Quote</button>
+                        <button className="header__quote-button" id="quoteButton" onClick={toggleLogin}>Nhận báo giá</button>
 
                         {/* Register Form */}
-                        {isLoginOpen && <Register onClick={toggleLogin} />}
+                        {isLoginOpen && <Register handleLogin={handleLogin} toggleLogin={toggleLogin} />}
                         {/* End Register Form */}
 
                     </div>
-                    {/* End Quote Button */}
 
+                    {/* End Quote Button */}
+                    {renderButton()}
 
                     {/* Header mobile screen */}
                     <div className="header__mobile-menu">
@@ -97,15 +117,15 @@ function Header() {
                             {/* End Hambugur Menu */}
 
                             {/* About Us */}
-                            <Link className="b" to="/about-us">About us</Link>
+                            <Link className="b" to="/about-us">Giới thiệu</Link>
                             {/* End About Us */}
 
                             {/* Services */}
-                            <Link className="b" to="WebPage/Services/ServicePage.html">Services</Link>
+                            <Link className="b" to="WebPage/Services/ServicePage.html">Dịch vụ</Link>
                             {/* End Services */}
 
                             {/* Blog */}
-                            <Link to='/blog' className="b" >Blogs</Link>
+                            <Link to='/blog' className="b" >Blogs nội thất</Link>
                             {/* End Blog */}
 
                             {/* Search */}

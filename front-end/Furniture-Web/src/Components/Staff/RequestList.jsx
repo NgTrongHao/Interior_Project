@@ -18,6 +18,7 @@ export default function RequestList() {
   const [token, setToken] = useState('');
   const [workspaceOptions, setWorkspaceOptions] = useState([]);
 
+
   useEffect(() => {
     const token = Cookies.get('token');
     setToken(token);
@@ -107,87 +108,45 @@ export default function RequestList() {
     }
   };
 
-  const renderDetailInputs = () => {
-    return selectedRowData.requestDetails.map((detail, index) => (
-      <div key={index}>
-        <label>Product {index + 1} Quantity:</label>
-        <input
-          type="number"
-          value={detail.quantity || ''}
-          onChange={(e) => {
-            const newDetails = [...selectedRowData.requestDetails];
-            newDetails[index].quantity = parseInt(e.target.value);
-            setSelectedRowData(prevData => ({ ...prevData, requestDetails: newDetails }));
-          }}
-        />
-        <label>Product {index + 1} Workspace:</label>
-        <Select
-          value={detail.workspaceName || ''}
-          onChange={(e) => {
-            const newDetails = [...selectedRowData.requestDetails];
-            newDetails[index].workspaceName = e.target.value;
-            setSelectedRowData(prevData => ({ ...prevData, requestDetails: newDetails }));
-          }}
-        >
-          {workspaceOptions.map((workspace, index) => (
-            <MenuItem key={index} value={workspace.workspace_name}>{workspace.workspace_name}</MenuItem>
-          ))}
-        </Select>
-        <label>Product {index + 1} Description:</label>
-        <input
-          type="text"
-          value={detail.description || ''}
-          onChange={(e) => {
-            const newDetails = [...selectedRowData.requestDetails];
-            newDetails[index].description = e.target.value;
-            setSelectedRowData(prevData => ({ ...prevData, requestDetails: newDetails }));
-          }}
-        />
-      </div>
-    ));
-  };
+
 
   return (
     <TableContainer component={Paper}>
-      {selectedRowData ? (
-        <div>
-          <div>
-            <p>ID: {selectedRowData.id}</p>
-            <p>Estimated Price: {selectedRowData.estimatedPrice}</p>
-            {/* Add more details here */}
-            {renderDetailInputs()}
-          </div>
-          <button onClick={handleBackToList}>Back to List</button>
-          <button onClick={handleConfirm}>Confirm</button>
-        </div>
-      ) : (
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell align="right">Estimated Price</TableCell>
-              <TableCell align="right">Customer Name</TableCell>
-              <TableCell align="right">Request St</TableCell>
+
+      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <TableHead style={{ backgroundColor: "#B0C4DE" }}>
+          <TableRow>
+            <TableCell>ID</TableCell>
+            <TableCell align="right">Giá dự kiến</TableCell>
+            <TableCell align="right">Tên khách hàng</TableCell>
+            <TableCell align="right">Trạng thái báo giá</TableCell>
+            <TableCell align="right">Xem thông tin</TableCell>
+
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row) => (
+            <TableRow
+              key={row.id}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              onClick={() => handleClick(row.id)}
+            >
+              <TableCell component="th" scope="row">
+                {row.id}
+              </TableCell>
+              <TableCell align="right">{row.price} VND</TableCell>
+              <TableCell align="right">{row.customer.full_name}</TableCell>
+              <TableCell align="right">Chờ xác nhận</TableCell>
+              <TableCell align="right">
+                <button>
+                  <Link to={`/staff/requestDetails/${row.id}`}>Xem</Link>
+                </button>
+              </TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow
-                key={row.id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                onClick={() => handleClick(row.id)}
-              >
-                <TableCell component="th" scope="row">
-                  {row.id}
-                </TableCell>
-                <TableCell align="right">{row.estimatedPrice}</TableCell>
-                <TableCell align="right">{row.customer.full_name}</TableCell>
-                <TableCell align="right">{row.customerRequestStatus}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
+          ))}
+        </TableBody>
+      </Table>
+
     </TableContainer>
   );
 }

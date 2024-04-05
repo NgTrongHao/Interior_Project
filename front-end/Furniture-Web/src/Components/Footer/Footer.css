@@ -5,6 +5,7 @@ footer {
   display: flex;
   height: 12vh;
   z-index: 1;
+  bottom:0 !important;
 }
 
 .footer-box {

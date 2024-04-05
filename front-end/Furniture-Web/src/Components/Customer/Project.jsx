@@ -1,335 +1,446 @@
-import React, { useState, useEffect, useContext } from 'react';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
-import { fetchAvailableWorkspace, fetchAvailableProducts } from './http';
-import Cookies from 'js-cookie';
-import axios from 'axios';
-import { Toaster } from 'react-hot-toast';
-import { ToastContainer, toast } from 'react-toastify';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
+import ProductTable from "./ProductTable.jsx";
+import Cookies from "js-cookie";
+import Select from "react-select";
+import { toast } from "react-hot-toast";
+import { ToastContainer } from "react-toastify";
+import { HiArrowSmallLeft } from "react-icons/hi2";
+import { fetchProductById } from './http.js';
+import axios from "axios";
+
+const getCustomerInfo = () => {
+
+    const customer = JSON.parse(localStorage.getItem('customer'));
+    if (customer) {
+        const { fullName, phone, email } = customer;
+        return { fullName, phone, email };
+    } else {
+        return null;
+    }
+
+}
 
 function Project() {
 
-    const [availableWorkspace, setAvailableWorkspace] = useState([]);
-    const [availableProducts, setAvailableProducts] = useState([]);
-    // set selected workspace to add at link /{workspaceName}/products to get products of that space
+    const initialCustomerInfo = getCustomerInfo();
+
+    const [workspaces, setWorkspaces] = useState([]);
+    const [availableWorkspaces, setAvailableWorkspaces] = useState([]);
+    const [productUnit, setProductUnit] = useState('');
+    const [requestData, setRequestData] = useState({
+        customer: initialCustomerInfo,
+        requestDetails: [
+            {
+                workspaceName: "",
+                description: '',
+                length: 0,
+                width: 0,
+                products: []
+            }
+        ]
+    });
+    const [selectedWorkspaces, setSelectedWorkspaces] = useState({});
     const [selectedWorkspace, setSelectedWorkspace] = useState(null);
-    const [selectedProducts, setSelectedProducts] = useState([]);
-    const [error, setError] = useState();
-    const [requestDetails, setRequestDetails] = useState([]);
-    const customer = localStorage.getItem('customer');
-    const token = Cookies.get('token');
-    const userData = JSON.parse(customer);
+    const [isValidLength, setIsValidLength] = useState(true);
+    const [isValidWidth, setIsValidWidth] = useState(true);
+    const [isConfirmed, setIsConfirmed] = useState(false); // State để theo dõi trạng thái xác nhận
+    const navigate = useNavigate(); // Sử dụng useNavigate để lấy hàm điều hướng
 
-    const userRequest = {
-        fullName: userData.fullName,
-        email: userData.email,
-        phone: userData.phone
-    }
-
-    console.log(userRequest);
-
-    // console.log(userData);
-    // console.log(token);
 
     useEffect(() => {
-        async function fetchWorkspace() {
-            try {
-                // call method to get all workspace.
-                const workspace = await fetchAvailableWorkspace();
-                setAvailableWorkspace(workspace);
-            } catch (error) {
-                setError({ message: error.message || 'Could not fetch places, please try again later.' });
-            }
-        }
-        fetchWorkspace();
+        fetchWorkspaces();
     }, []);
 
     useEffect(() => {
-        async function fetchProducts(workspaceName) {
-            try {
-                const products = await fetchAvailableProducts(workspaceName);
-                setAvailableProducts(products);
-            } catch (error) {
-                setError({ message: error.message || 'Could not fetch products, please try again later.' });
+        console.log(requestData)
+    }, [requestData])
+
+    const fetchWorkspaces = async () => {
+        try {
+            const response = await fetch("http://localhost:8080/api/v1/workspace");
+            if (!response.ok) {
+                throw new Error("Failed to fetch workspaces.");
             }
+            const data = await response.json();
+            setAvailableWorkspaces(data);
+        } catch (error) {
+            console.error("Error fetching workspaces:", error);
         }
-        if (selectedWorkspace) {
-            fetchProducts(selectedWorkspace.workspace_name);
-        }
-    }, [selectedWorkspace]);
-    // work when workspace was selected -> render all products of that space
-
-    const handleAddProduct = (event) => {
-        event.preventDefault(); // prevent page load
-        const productName = event.target.elements.productName.value;
-        const productQuantity = parseInt(event.target.elements.productQuantity.value, 10);
-        const description = event.target.elements.description.value;
-
-        if (!productName || !productQuantity || isNaN(productQuantity) || productQuantity <= 0) {
-            return;
-        }
-
-        const selectedProductId = selectedProducts ? selectedProducts.id : null;
-        const existingProductIndex = requestDetails.findIndex(detail => detail.product === selectedProductId);
-
-        if (existingProductIndex !== -1) {
-            // Nếu sản phẩm đã tồn tại trong danh sách, thì cập nhật số lượng
-            const updatedRequestDetails = [...requestDetails];
-            updatedRequestDetails[existingProductIndex].quantity += productQuantity;
-            setRequestDetails(updatedRequestDetails);
-        } else {
-            const newRequestDetail = {
-                product: selectedProductId, // Sử dụng id của sản phẩm thay vì tên sản phẩm
-                quantity: productQuantity,
-                workspaceName: selectedWorkspace ? selectedWorkspace.workspace_name : '', // Lấy tên workspace
-                description: description
-            };
-            setRequestDetails(prevDetails => [...prevDetails, newRequestDetail]);
-        }
-
-        // Xóa nội dung của các trường input sau khi thêm sản phẩm
-        event.target.elements.workspaceName.value = '';
-        event.target.elements.productName.value = ''; // Xóa giá trị của trường nhập liệu "Product"
-        event.target.elements.productQuantity.value = ''; // Xóa giá trị của trường nhập liệu "Product Quantity"
-        event.target.elements.description.value = ''; // Xóa giá trị của trường nhập liệu "Description"
-        setSelectedProducts(null);
     };
 
-    const handleSubmitRequest = () => {
+    const getToken = () => {
+        return Cookies.get('token');
+    };
 
-        const requestData = {
-            customer: userRequest,
-            requestDetails: requestDetails
-        }
+    const addWorkspace = () => {
+        const newWorkspace = {
+            workspaceName: "",
+            description: '',
+            length: 0,
+            width: 0,
+            products: []
+        };
+        setRequestData(prevData => ({
+            ...prevData,
+            requestDetails: [...prevData.requestDetails, newWorkspace]
+        }));
+    };
 
-        console.log(requestData);
+    const addProduct = (workspaceIndex) => {
+        const updatedRequestData = { ...requestData };
+        const products = [...updatedRequestData.requestDetails[workspaceIndex].products, { productId: "", quantity: 0, length: 0, width: 0, height: 0, description: "" }];
+        updatedRequestData.requestDetails[workspaceIndex].products = products;
+        updatedRequestData.requestDetails[workspaceIndex].workspaceName = selectedWorkspaces[updatedRequestData.requestDetails[workspaceIndex].id].label;
+        setRequestData(updatedRequestData);
+    };
 
-        axios.post('http://localhost:8080/api/v1/request/auth', requestData, {
-            headers: {
-                'Authorization': `Bearer ${token}`, // Thêm token vào header Authorization
-                'Content-Type': 'application/json' // Đảm bảo loại nội dung là JSON
-            }
-        }).catch(err => {
-            console.log(err);
+    // const addProduct = (workspaceIndex) => {
+
+    //     const updatedRequestData = { ...requestData };
+    //     const workspaceName = updatedRequestData.requestDetails[workspaceIndex].workspaceName;
+
+    //     // Tìm kiếm workspace có workspaceName tương ứng trong availableWorkspaces
+    //     const workspace = availableWorkspaces.find(workspace => workspace.workspace_name === workspaceName);
+
+    //     if (workspace) {
+    //         // Tạo một sản phẩm mới với productId, quantity, và description mặc định
+    //         const newProduct = { productId: "", quantity: 0, description: "" };
+
+    //         // Thêm sản phẩm mới vào danh sách sản phẩm của workspace tương ứng
+    //         updatedRequestData.requestDetails[workspaceIndex].products.push(newProduct);
+
+    //         // Cập nhật requestData
+    //         setRequestData(updatedRequestData);
+    //     } else {
+    //         console.error(`Workspace "${workspaceName}" not found in availableWorkspaces.`);
+    //     }
+    // };
+
+
+    const deleteWorkspace = (workspaceIndex) => {
+        const updatedRequestData = { ...requestData };
+        updatedRequestData.requestDetails.splice(workspaceIndex, 1);
+        setRequestData(updatedRequestData);
+    };
+
+    const deleteProduct = (workspaceIndex, productIndex) => {
+        const updatedRequestData = { ...requestData };
+        updatedRequestData.requestDetails[workspaceIndex].products.splice(productIndex, 1);
+        setRequestData(updatedRequestData);
+    };
+
+    const handleWorkspaceChange = (selectedOption, requestDetailId) => {
+        setSelectedWorkspaces({
+            ...selectedWorkspaces,
+            [requestDetailId]: selectedOption
         });
+        console.log(selectedOption)
+        setSelectedWorkspace(selectedOption);
+    };
 
-        // Gửi requestDetails lên server
-        if (requestDetails.length == 0) {
-            console.log("Nothings to request");
-            toast.error("Nothings to request");
+    const handleEditQuantity = (workspaceIndex, productIndex, newQuantity) => {
+        const updatedRequestData = { ...requestData };
+        updatedRequestData.requestDetails[workspaceIndex].products[productIndex].quantity = newQuantity;
+        setRequestData(updatedRequestData);
+    };
+
+    const handleEditNote = (workspaceIndex, productIndex, newNote) => {
+        const updatedRequestData = { ...requestData };
+        updatedRequestData.requestDetails[workspaceIndex].products[productIndex].description = newNote;
+        setRequestData(updatedRequestData);
+    };
+
+    const handleProductLengthChange = (workspaceIndex, productIndex, newLength) => {
+        const updatedRequestData = { ...requestData };
+        updatedRequestData.requestDetails[workspaceIndex].products[productIndex].length = newLength;
+        setRequestData(updatedRequestData);
+    }
+
+    const handleProductWidthChange = (workspaceIndex, productIndex, newWidth) => {
+        const updatedRequestData = { ...requestData };
+        updatedRequestData.requestDetails[workspaceIndex].products[productIndex].width = newWidth;
+        setRequestData(updatedRequestData);
+    }
+
+    const handleProductHeightChange = (workspaceIndex, productIndex, newHeight) => {
+        const updatedRequestData = { ...requestData };
+        updatedRequestData.requestDetails[workspaceIndex].products[productIndex].height = newHeight;
+        setRequestData(updatedRequestData);
+    }
+
+    const handleProductChange = (workspaceIndex, productIndex, productId) => {
+        const updatedRequestData = { ...requestData };
+        updatedRequestData.requestDetails[workspaceIndex].products[productIndex].productId = productId;
+        setRequestData(updatedRequestData);
+    };
+
+    const handleWorkspaceDescriptionChange = (workspaceIndex, description) => {
+        const updatedRequestData = { ...requestData };
+        updatedRequestData.requestDetails[workspaceIndex].description = description;
+        updatedRequestData.requestDetails[workspaceIndex].workspaceName = selectedWorkspaces[updatedRequestData.requestDetails[workspaceIndex].id].label;
+        setRequestData(updatedRequestData);
+    };
+
+    const handleWorkspaceLengthChange = (workspaceIndex, length) => {
+        const parsedLength = parseFloat(length); // Chuyển đổi length thành kiểu số
+
+        const updatedRequestData = { ...requestData };
+        updatedRequestData.requestDetails[workspaceIndex].length = parsedLength;
+        updatedRequestData.requestDetails[workspaceIndex].workspaceName = selectedWorkspaces[updatedRequestData.requestDetails[workspaceIndex].id].label;
+
+        // Validate length
+        const isValid = !isNaN(parsedLength) && parsedLength > 0;
+        setIsValidLength(isValid);
+
+        setRequestData(updatedRequestData);
+    };
+
+    // Hàm để cập nhật thông tin của khách hàng vào trong requestData
+    const updateCustomerInfo = (field, value) => {
+        setRequestData(prevData => ({
+            ...prevData,
+            customer: {
+                ...prevData.customer,
+                [field]: value
+            }
+        }));
+    };
+
+    const handleWorkspaceWidthChange = (workspaceIndex, width) => {
+        const parsedWidth = parseFloat(width); // Chuyển đổi width thành kiểu số
+
+        const updatedRequestData = { ...requestData };
+        updatedRequestData.requestDetails[workspaceIndex].width = parsedWidth;
+        console.log(selectedWorkspaces)
+        updatedRequestData.requestDetails[workspaceIndex].workspaceName = selectedWorkspaces[updatedRequestData.requestDetails[workspaceIndex].id].label;
+
+        // Validate width
+        const isValid = !isNaN(parsedWidth) && parsedWidth > 0;
+        setIsValidWidth(isValid);
+        console.log(updatedRequestData)
+        setRequestData(updatedRequestData);
+    };
+
+    const handleConfirmRequest = async () => {
+        console.log("Request Data:", requestData);
+
+        if (!requestData || !requestData.customer || !requestData.customer.email) {
+            toast.error('Please enter customer email');
             return;
         }
-        console.log('Request Details:', requestDetails);
-        console.log('Request Details sent successfully');
-        toast.success('Request Details sent successfully')
-        // Reset requestDetails sau khi gửi thành công
-        setRequestDetails([]);
+
+
+        try {
+            // Xử lý requestData ở đây để đảm bảo tất cả các workspace và sản phẩm được bao gồm
+            let isValid = true;
+
+            requestData.requestDetails.forEach(workspace => {
+                // Kiểm tra xem mỗi workspace có sản phẩm không
+                if (workspace.products.length === 0) {
+                    isValid = false;
+                    toast.error(`Workspace ${workspace.workspaceName} must have at least one product`);
+                }
+
+                // Kiểm tra xem các trường thông tin cần thiết đã được điền đầy đủ không
+                if (!workspace.description || !workspace.length || !workspace.width) {
+                    isValid = false;
+                    toast.error(`Please fill in all required fields for workspace ${workspace.workspaceName}`);
+                }
+            });
+
+            // if (!isValid) {
+            //     return;
+            // }
+
+            // Cập nhật requestDetail trước khi gửi yêu cầu
+            const updatedRequestData = { ...requestData };
+            updatedRequestData.requestDetails.forEach(detail => {
+                // Xóa các trường không cần thiết trước khi gửi yêu cầu
+                // delete detail.workspaceName;
+                detail.products.forEach(product => {
+                    delete product.description;
+                });
+            });
+
+            setRequestData(updatedRequestData); // Cập nhật requestData với giá trị mới
+
+            const token = getToken();
+            const response = await axios.post('http://localhost:8080/api/v1/request/auth', updatedRequestData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+            });
+
+            setRequestData({
+                customer: initialCustomerInfo,
+                requestDetails: [
+                    {
+                        workspaceName: "",
+                        description: '',
+                        length: 0,
+                        width: 0,
+                        products: []
+                    }
+                ]
+            })
+
+            alert('Gửi báo giá thành công');
+
+        } catch (error) {
+            console.error('Error confirming request:', error);
+            alert('Failed to confirm request. Please try again later.');
+        }
     };
+
+
+    const handleCloseRequest = () => {
+        navigate('/customer');
+    };
+
+    useEffect(() => {
+        if (requestData) {
+            const updatedSelectedWorkspaces = {};
+            requestData.requestDetails.forEach(detail => {
+                const workspace = availableWorkspaces.find(workspace => workspace.workspace_name === detail.workspaceName);
+                if (workspace) {
+                    updatedSelectedWorkspaces[detail.id] = {
+                        value: workspace.id,
+                        label: workspace.workspace_name
+                    };
+                }
+            });
+            setSelectedWorkspaces(updatedSelectedWorkspaces);
+        }
+    }, [requestData, availableWorkspaces]);
 
     return (
 
-        <div className='flex flex-col gap-6 border-[2px]'>
+        <div className="bg-white w-screen m-0 h-full overscroll-auto p-6">
+            <ToastContainer />
+            <HiArrowSmallLeft className=" z-10 right-14  text-6xl static font-semibold hover:cursor-pointer" onClick={handleCloseRequest} />
 
-            <ToastContainer position='top-center' />
+            <h1 className="text-6xl font-bold mb-8 text-center">Quản lí báo giá</h1>
 
-            {/* <TextField
-                id="outlined-basic"
-                label="Your Name"
-                variant="outlined"
-                sx={{ width: 300 }}
-                InputProps={{ readOnly: true }}
-                defaultValue={userData ? userData.fullName : ''}
-                fullWidth
-            />
-            <TextField
-                id="outlined-basic"
-                label="Email"
-                variant="outlined"
-                sx={{ width: 300 }}
-                InputProps={{ readOnly: true }}
-                defaultValue={customer ? userData.email : ''}
-                fullWidth
-            />
-            <TextField
-                id="outlined-basic"
-                label="Phone"
-                variant="outlined"
-                sx={{ width: 300 }}
-                InputProps={{ readOnly: true }}
-                defaultValue={customer ? userData.phone : ''}
-                fullWidth
-            />
-            <div className='flex flex-col gap-5'>
-                <form className='flex flex-col gap-4' onSubmit={handleAddProduct}>
-                    <Autocomplete
-                        disablePortal
-                        id="combo-box-demo"
-                        options={availableWorkspace}
-                        getOptionLabel={(option) => option.workspace_name}
-                        onChange={(event, newValue) => setSelectedWorkspace(newValue)}
-                        renderInput={(params) => <TextField {...params} key={availableWorkspace.id} name="workspaceName" label="Room" variant="outlined" sx={{ width: 300 }} />}
-                        fullWidth
-                    />
-
-                    <Autocomplete
-                        disablePortal
-                        id="combo-box-demo"
-                        options={availableProducts}
-                        getOptionLabel={(option) => option.name}
-                        getOptionSelected={(option, value) => option.id === value.id} // Specify how to compare the selected option with the options in the list
-                        onChange={(event, newValue) => setSelectedProducts(newValue)}
-                        renderInput={(params) => <TextField {...params} name="productName" label="Product" variant="outlined" sx={{ width: 300 }} />}
-                    />
-
-                    <TextField
-                        id="number"
-                        label="Product Quantity"
-                        type="number"
-                        name="productQuantity"
-                        variant="outlined"
-                        sx={{ width: 150 }}
-                        inputProps={{ min: 0 }}
-                    />
-                    <TextField
-                        id="outlined-basic"
-                        label="Description"
-                        variant="outlined"
-                        multiline
-                        size='small'
-                        name="description"
-                        sx={{ width: 300 }}
-                    />
-                    <button type="submit" className='px-4 py-2 border-[2px] bg-cyan-700 hover:bg-cyan-900 text-white'>Add Product</button>
-                </form>
-
-                <div className='flex gap-6'>
-                    {selectedWorkspace && (
-                        <div className='flex flex-col gap-4'>
-                            <div className='flex flex-col gap-4 w-[500px]'>
-                                {requestDetails.map((detail, index) => (
-                                    <div key={index} className='flex justify-between items-center gap-2'>
-                                        <div>{detail.product}</div>
-                                        <div>{detail.quantity}</div>
-                                        <div>{detail.workspaceName}</div>
-                                        <div>{detail.description}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-                <button className='px-4 py-2 border-[2px] bg-cyan-700 hover:bg-cyan-900 text-white rounded-full' onClick={handleSubmitRequest}>Send Request</button>
-            </div> */}
-
-            <div className="isolate bg-white py-24 sm:py-32 lg:px-8 px-12">
-                <div className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]" aria-hidden="true">
-                    <div className="relative left-1/2 -z-10 aspect-[1155/678] w-[36.125rem] max-w-none -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-40rem)] sm:w-[72.1875rem]" style={{
-                        clipPath: 'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)'
-                    }}></div>
-                </div>
-                <div className="mx-auto max-w-2xl text-center px-12">
-                    <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Create Request</h2>
-                    {/* <p className="mt-2 text-lg leading-8 text-gray-600">Aute magna irure deserunt veniam aliqua magna enim voluptate.</p> */}
-                </div>
-                <form onSubmit={handleAddProduct} className="mx-auto mt-16 max-w-xl sm:mt-20">
-                    <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
-                        <div className='sm:col-span-2'>
-                            <label htmlFor="last-name" className="block text-sm font-semibold leading-6 text-gray-900">Email</label>
-                            <div className="mt-2.5">
-                                <input defaultValue={customer ? userData.email : ''} type="text" name="last-name" id="last-name" autocomplete="family-name"
-                                    className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 
-                                placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" readOnly />
-                            </div>
-                            <label htmlFor="first-name" className="block text-sm font-semibold leading-6 text-gray-900">
-                                Full Name
-                            </label>
-                            <div className="mt-2.5">
-                                <input type="text" name="first-name" id="first-name" autocomplete="given-name" defaultValue={userData ? userData.fullName : ''}
-                                    className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset 
-                                    ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 
-                                    sm:text-sm sm:leading-6" readOnly />
-                            </div>
-                        </div>
-                        <div className="sm:col-span-2">
-                            <label for="company" className="block text-sm font-semibold leading-6 text-gray-900">
-                                Phone Number
-                            </label>
-                            <div className="mt-2.5">
-                                <input type="text" defaultValue={customer ? userData.phone : ''} name="company" id="company" autocomplete="organization"
-                                    className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 
-                                ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset 
-                                focus:ring-indigo-600 sm:text-sm sm:leading-6" readOnly />
-                            </div>
-                        </div>
-                        <div className="sm:col-span-2">
-                            {/* <label for="phone-number" className="block text-sm font-semibold leading-6 text-gray-900">Workspace</label> */}
-                            <Autocomplete
-                                disablePortal
-                                id="combo-box-demo"
-                                options={availableWorkspace}
-                                getOptionLabel={(option) => option.workspace_name}
-                                onChange={(event, newValue) => setSelectedWorkspace(newValue)}
-                                renderInput={(params) => <TextField {...params} key={availableWorkspace.id} name="workspaceName" label="Workspace" variant="outlined" sx={{ width: 360 }} />}
-                            />
-                        </div>
-                        <div className="sm:col-span-2">
-                            <Autocomplete
-                                disablePortal
-                                id="combo-box-demo"
-                                options={availableProducts}
-                                getOptionLabel={(option) => option.name}
-                                getOptionSelected={(option, value) => option.id === value.id} // Specify how to compare the selected option with the options in the list
-                                onChange={(event, newValue) => setSelectedProducts(newValue)}
-                                renderInput={(params) => <TextField {...params} name="productName" label="Product" variant="outlined" sx={{ width: 360 }} />}
-                            />
-                        </div>
-                        <div className="sm:col-span-2">
-                            <TextField
-                                id="number"
-                                label="Product Quantity"
-                                type="number"
-                                name="productQuantity"
-                                variant="outlined"
-                                sx={{ width: 150 }}
-                                inputProps={{ min: 0 }}
-                            />
-                        </div>
-                        <div className="sm:col-span-2">
-                            <label for="message" className="block text-sm font-semibold leading-6 text-gray-900">Message</label>
-                            <div className="mt-2.5">
-                                <textarea name="description" id="description" rows="4" className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></textarea>
-                            </div>
-                        </div>
-                        <button type="submit" className="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm 
-                        hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                            Add Product
-                        </button>
+            <div className="mt-8  overflow-auto">
+                <h2 className="text-4xl font-bold mb-2">Thông tin khách hàng</h2>
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-gray-700">Email:</label>
+                        <input
+                            type="text"
+                            value={getCustomerInfo().email}
+                            onChange={(e) => updateCustomerInfo('email', e.target.value)}
+                            placeholder="Email"
+                            className="border border-gray-300 rounded px-4 py-2 mt-2 w-full focus:outline-none focus:border-blue-500"
+                        />
                     </div>
-                    <div className='flex gap-6'>
-                        {selectedWorkspace && (
-                            <div className='flex flex-col gap-4'>
-                                <div className='flex flex-col gap-4 w-[500px]'>
-                                    {requestDetails.map((detail, index) => (
-                                        <div key={index} className='flex justify-between items-center gap-2'>
-                                            <div>{detail.product}</div>
-                                            <div>{detail.quantity}</div>
-                                            <div>{detail.workspaceName}</div>
-                                            <div>{detail.description}</div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
+                    <div>
+                        <label className="block text-gray-700">Số điện thoại:</label>
+                        <input
+                            type="text"
+                            value={getCustomerInfo().phone}
+                            onChange={(e) => updateCustomerInfo('phone', e.target.value)}
+                            placeholder="Phone"
+                            className="border border-gray-300 rounded px-4 py-2 mt-2 w-full focus:outline-none focus:border-blue-500"
+                        />
                     </div>
-                    <div className="mt-10">
-                        <button type="submit" className="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm 
-                        hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                            onClick={handleSubmitRequest}>
-                            Submit Request
-                        </button>
+                    <div>
+                        <label className="block text-gray-700">Họ tên:</label>
+                        <input
+                            type="text"
+                            value={getCustomerInfo().fullName}
+                            onChange={(e) => updateCustomerInfo('full_name', e.target.value)}
+                            placeholder="Full Name"
+                            className="border border-gray-300 rounded px-4 py-2 mt-2 w-full focus:outline-none focus:border-blue-500"
+                        />
                     </div>
-                </form>
+                </div>
             </div>
+
+
+
+            {requestData && requestData.requestDetails.map((requestDetail, workspaceIndex) => (
+                <div key={requestDetail.id} className="mt-8  border-green-500 border-2 p-20">
+                    <div className="grid grid-cols-2 gap-4 ">
+                        <div className="mt-4">
+                            <h2 className="text-3xl font-bold m-3">Chọn khu vựa thi công</h2>
+                            <Select
+                                value={selectedWorkspaces[requestDetail.id] || ""}
+                                onChange={(selectedOption) => handleWorkspaceChange(selectedOption, requestDetail.id)}
+                                options={availableWorkspaces.map((workspace) => ({
+                                    value: workspace.id,
+                                    label: workspace.workspace_name,
+                                    workspace_name: workspace.workspace_name
+                                }))}
+                                placeholder="Chọn khu vực thi công"
+                                className="w-full mr-2 border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                getOptionLabel={(option) => option.label}
+                                getOptionValue={(option) => option.value}
+                            />
+                        </div>
+
+
+                        <div className="mt-4">
+                            <label className="block text-gray-700">Mô tả:</label>
+                            <input
+                                type="text"
+                                value={requestDetail.description}
+                                onChange={(e) => handleWorkspaceDescriptionChange(workspaceIndex, e.target.value)}
+                                placeholder="Workspace Description"
+                                className="h-3/5 border border-gray-300 rounded px-4 py-2 mt-2 w-full focus:outline-none focus:border-blue-500"
+                            />
+                        </div>
+                        <div className="mt-4">
+                            <label className="block text-gray-700">Chiều dài (m):</label>
+                            <input
+                                type="number"
+                                value={requestDetail.length}
+                                min={0}
+                                onChange={(e) => handleWorkspaceLengthChange(workspaceIndex, e.target.value)}
+                                placeholder="Workspace Length"
+                                className="border border-gray-300 rounded px-4 py-2 mt-2 w-full focus:outline-none focus:border-blue-500"
+                            />
+                        </div>
+                        <div className="mt-4">
+                            <label className="block text-gray-700">Chiều rộng (m):</label>
+                            <input
+                                type="number"
+                                value={requestDetail.width}
+                                min={0}
+                                onChange={(e) => handleWorkspaceWidthChange(workspaceIndex, e.target.value)}
+                                placeholder="Workspace Width"
+                                className="border border-gray-300 rounded px-4 py-2 mt-2 w-full focus:outline-none focus:border-blue-500"
+                            />
+                        </div>
+
+                    </div>
+                    <button onClick={() => deleteWorkspace(workspaceIndex)} className="text-red-500 hover:text-red-700 text-3xl font-bold">
+                        Xóa khu vực thi công
+                    </button>
+
+                    <ProductTable
+                        products={requestDetail.products}
+                        onDeleteProduct={(productIndex) => deleteProduct(workspaceIndex, productIndex)}
+                        onEditQuantity={(productIndex, newQuantity) => handleEditQuantity(workspaceIndex, productIndex, newQuantity)}
+                        onEditNote={(productIndex, newNote) => handleEditNote(workspaceIndex, productIndex, newNote)}
+                        onAddProduct={() => addProduct(workspaceIndex)}
+                        onLengthChange={(productIndex, newLength) => handleProductLengthChange(workspaceIndex, productIndex, newLength)}
+                        onWidthChange={(productIndex, newWidth) => handleProductWidthChange(workspaceIndex, productIndex, newWidth)}
+                        onHeightChange={(productIndex, newHeight) => handleProductHeightChange(workspaceIndex, productIndex, newHeight)}
+                        selectedWorkspace={selectedWorkspaces[requestDetail.id] ? selectedWorkspaces[requestDetail.id].label : ""}
+                        handleProductChange={(productIndex, productId) => handleProductChange(workspaceIndex, productIndex, productId)}
+                    />
+                </div>
+            ))}
+
+            <button onClick={addWorkspace} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4">
+                Thêm khu vực thi công
+            </button>
+            <button onClick={handleConfirmRequest} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">
+                Xác nhận báo giá
+            </button>
 
         </div>
 

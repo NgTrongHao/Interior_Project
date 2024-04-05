@@ -5,3 +5,8 @@
 .ntt-arrow {
   @apply hidden md:block text-zinc-400 text-[30px] mt-40 absolute mx-8 cursor-pointer bg-transparent;
 }
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
